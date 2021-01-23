@@ -1,3 +1,4 @@
+import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -51,6 +52,18 @@ class _MyHomePageState extends State<MyHomePage> {
     {'icon': Icons.whatshot, 'title': 'Other'},
   ];
 
+  void startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      builder: (_) {
+        return GestureDetector(
+          child: NewTransaction(),
+          onTap: () {},
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Icons.add,
               color: Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () => startAddNewTransaction(context),
           ),
         ],
       ),
