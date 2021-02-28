@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -14,6 +15,16 @@ class _NewTransactionState extends State<NewTransaction> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  final CarouselController _controller = CarouselController();
+
+  List<Map<String, Object>> _carousalItems = [
+    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.purple},
+    {'icon': Icons.shopping_cart, 'title': 'Groceries', 'color': Colors.cyan},
+    {'icon': Icons.train, 'title': 'Travel', 'color': Colors.blue},
+    {'icon': Icons.local_mall, 'title': 'Beauty', 'color': Colors.red},
+    {'icon': Icons.theaters, 'title': 'Entertainment', 'color': Colors.green},
+    {'icon': Icons.whatshot, 'title': 'Other', 'color': Colors.amber},
+  ];
 
   void submitData() {
     String enteredTitle = _titleController.text;
@@ -81,6 +92,67 @@ class _NewTransactionState extends State<NewTransaction> {
                     )
                   ],
                 ),
+              ),
+              Stack(
+                children: [
+                  CarouselSlider(
+                    carouselController: _controller,
+                    options: CarouselOptions(
+                      height: 80.0,
+                      viewportFraction: 1.0,
+                      enlargeCenterPage: true,
+                      enlargeStrategy: CenterPageEnlargeStrategy.height,
+                      disableCenter: true,
+                      aspectRatio: 2.0,
+                    ),
+                    items: _carousalItems.map((item) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Container(
+                              // width: 60.0,
+                              margin: EdgeInsets.symmetric(horizontal: 0),
+                              // decoration: BoxDecoration(color: Colors.amber),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      width: 100.0,
+                                      child: CircleAvatar(
+                                        backgroundColor: item['color'],
+                                        child: Container(
+                                          margin: EdgeInsets.all(5.0),
+                                          child: Icon(
+                                            item['icon'],
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Text(item['title'])
+                                ],
+                              ));
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  Positioned(
+                    left: 0,
+                    top: 10,
+                    child: FlatButton(
+                      onPressed: () => _controller.previousPage(),
+                      child: Icon(Icons.chevron_left),
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 10,
+                    child: FlatButton(
+                      onPressed: () => _controller.nextPage(),
+                      child: Icon(Icons.chevron_right),
+                    ),
+                  ),
+                ],
               ),
               TextField(
                 decoration: InputDecoration(labelText: 'title'),
