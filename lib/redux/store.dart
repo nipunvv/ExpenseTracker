@@ -7,9 +7,9 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 AppState appReducer(AppState state, dynamic action) {
   if (action is SetTransactionStateAction) {
-    final nextPostsState = transactionReducer(state.postsState, action);
+    final nextTxState = transactionReducer(state.txState, action);
 
-    return state.copyWith(postsState: nextPostsState);
+    return state.copyWith(txState: nextTxState);
   }
 
   return state;
@@ -17,17 +17,17 @@ AppState appReducer(AppState state, dynamic action) {
 
 @immutable
 class AppState {
-  final TransactionState postsState;
+  final TransactionState txState;
 
   AppState({
-    @required this.postsState,
+    @required this.txState,
   });
 
   AppState copyWith({
-    TransactionState postsState,
+    TransactionState txState,
   }) {
     return AppState(
-      postsState: postsState ?? this.postsState,
+      txState: txState ?? this.txState,
     );
   }
 }
@@ -44,12 +44,12 @@ class Redux {
   }
 
   static Future<void> init() async {
-    final postsStateInitial = TransactionState.initial();
+    final txStateInitial = TransactionState.initial();
 
     _store = Store<AppState>(
       appReducer,
       middleware: [thunkMiddleware],
-      initialState: AppState(postsState: postsStateInitial),
+      initialState: AppState(txState: txStateInitial),
     );
   }
 }
