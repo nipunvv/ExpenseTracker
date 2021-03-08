@@ -1,3 +1,4 @@
+import 'package:expense_tracker/database/database.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Map<String, String> transaction = {};
+  Future _transactionsFuture;
+
   List<Map<String, Object>> _txTypes = [
     {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.purple},
     {'icon': Icons.shopping_cart, 'title': 'Groceries', 'color': Colors.cyan},
@@ -69,6 +73,18 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _transactionsFuture = getTransactions();
+    _transactionsFuture.then((value) => print("Transaction => $value"));
+  }
+
+  getTransactions() async {
+    final _transactions = DBProvider.db.getTransactions();
+    return _transactions;
   }
 
   @override

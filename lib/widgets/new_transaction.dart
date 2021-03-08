@@ -1,4 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:expense_tracker/database/database.dart';
+import 'package:expense_tracker/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -33,6 +35,15 @@ class _NewTransactionState extends State<NewTransaction> {
     if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null) {
       return;
     }
+
+    Transaction transaction = Transaction(
+        id: null,
+        title: enteredTitle,
+        amount: enteredAmount,
+        category: null,
+        date: _selectedDate);
+
+    DBProvider.db.newTransaction(transaction);
 
     // widget.addNewTransaction(enteredTitle, enteredAmount, _selectedDate);
 
