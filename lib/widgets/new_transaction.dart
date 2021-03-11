@@ -5,10 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
-  // final Function addNewTransaction;
-
-  // NewTransaction(this.addNewTransaction);
-
   @override
   _NewTransactionState createState() => _NewTransactionState();
 }
@@ -18,9 +14,10 @@ class _NewTransactionState extends State<NewTransaction> {
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   final CarouselController _controller = CarouselController();
+  int categoryIndex = 0;
 
   List<Map<String, Object>> _carousalItems = [
-    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.purple},
+    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.blueGrey},
     {'icon': Icons.shopping_cart, 'title': 'Groceries', 'color': Colors.cyan},
     {'icon': Icons.train, 'title': 'Travel', 'color': Colors.blue},
     {'icon': Icons.local_mall, 'title': 'Beauty', 'color': Colors.red},
@@ -36,16 +33,16 @@ class _NewTransactionState extends State<NewTransaction> {
       return;
     }
 
+    String selectedCategory = _carousalItems[categoryIndex]['title'];
+
     Transaction transaction = Transaction(
         id: null,
         title: enteredTitle,
         amount: enteredAmount,
-        category: null,
+        category: selectedCategory,
         date: _selectedDate);
 
     DBProvider.db.newTransaction(transaction);
-
-    // widget.addNewTransaction(enteredTitle, enteredAmount, _selectedDate);
 
     Navigator.of(context).pop();
   }
@@ -64,6 +61,22 @@ class _NewTransactionState extends State<NewTransaction> {
         _selectedDate = pickedDate;
       });
     });
+  }
+
+  void changeCategory(direction) {
+    if (direction == 'left') {
+      setState(() {
+        categoryIndex =
+            categoryIndex == 0 ? _carousalItems.length - 1 : categoryIndex - 1;
+      });
+      _controller.previousPage();
+    } else {
+      setState(() {
+        categoryIndex =
+            categoryIndex == _carousalItems.length - 1 ? 0 : categoryIndex + 1;
+      });
+      _controller.nextPage();
+    }
   }
 
   @override
@@ -150,16 +163,16 @@ class _NewTransactionState extends State<NewTransaction> {
                   Positioned(
                     left: 0,
                     top: 10,
-                    child: FlatButton(
-                      onPressed: () => _controller.previousPage(),
+                    child: TextButton(
+                      onPressed: () => changeCategory('left'),
                       child: Icon(Icons.chevron_left),
                     ),
                   ),
                   Positioned(
                     right: 0,
                     top: 10,
-                    child: FlatButton(
-                      onPressed: () => _controller.nextPage(),
+                    child: TextButton(
+                      onPressed: () => changeCategory('right'),
                       child: Icon(Icons.chevron_right),
                     ),
                   ),

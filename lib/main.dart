@@ -1,5 +1,6 @@
 import 'package:expense_tracker/database/database.dart';
 import 'package:expense_tracker/redux/store.dart';
+import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -51,10 +52,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Map<String, String> transaction = {};
-  Future _transactionsFuture;
+  Future _transactionSummary;
 
   List<Map<String, Object>> _txTypes = [
-    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.purple},
+    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.blueGrey},
     {'icon': Icons.shopping_cart, 'title': 'Groceries', 'color': Colors.cyan},
     {'icon': Icons.train, 'title': 'Travel', 'color': Colors.blue},
     {'icon': Icons.local_mall, 'title': 'Beauty', 'color': Colors.red},
@@ -78,8 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _transactionsFuture = getTransactions();
-    _transactionsFuture.then((value) => print("Transaction => $value"));
+    _transactionSummary = DBProvider.db.getMonthSummary();
   }
 
   getTransactions() async {
@@ -110,31 +110,56 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 600,
               child: ListView.builder(
                 itemCount: _txTypes.length,
-                itemBuilder: (context, index) => Card(
-                  elevation: 0,
-                  margin: EdgeInsets.symmetric(horizontal: 3, vertical: 4),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: _txTypes[index]['color'],
-                      child: Padding(
-                        padding: EdgeInsets.all(6),
-                        child: FittedBox(
-                          child: Icon(
-                            _txTypes[index]['icon'],
-                            color: Colors.white,
+                itemBuilder: (context, index) => GestureDetector(
+                  child: Card(
+                    elevation: 0,
+                    margin: EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: _txTypes[index]['color'],
+                        child: Padding(
+                          padding: EdgeInsets.all(6),
+                          child: FittedBox(
+                            child: Icon(
+                              _txTypes[index]['icon'],
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    title: Text(
-                      _txTypes[index]['title'],
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    subtitle: Text(
-                      'Monthly total comes here',
+                      title: Text(
+                        _txTypes[index]['title'],
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      subtitle: FutureBuilder(
+                        future: _transactionSummary,
+                        builder: (_, transactionData) {
+                          switch (transactionData.connectionState) {
+                            case ConnectionState.none:
+                            case ConnectionState.waiting:
+                              return Text('0.0');
+                            case ConnectionState.active:
+                            case ConnectionState.done:
+                              return Text(
+                                  (transactionData.data[index]['amount'] ?? 0.0)
+                                      .toString());
+                          }
+                          return Text('');
+                        },
+                      ),
                     ),
                   ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CategorySummary(
+                                  title: _txTypes[index]['title'],
+                                  icon: _txTypes[index]['icon'],
+                                  color: _txTypes[index]['color'],
+                                )));
+                  },
                 ),
               ),
             ),

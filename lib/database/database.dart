@@ -29,9 +29,18 @@ class DBProvider {
             amount REAL,
             category TEXT,
             date TEXT
-          )''');
+          );
+          ''');
+        await db.execute('''CREATE TABLE categories (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL
+          );
+        ''');
+        await db.execute('''INSERT INTO categories(name)
+          VALUES ('Food'),('Groceries'),('Travel'),('Beauty'),('Entertainment'),('Other');
+        ''');
       },
-      version: 1,
+      version: 4,
     );
   }
 
@@ -46,7 +55,7 @@ class DBProvider {
       transaction.title,
       transaction.amount,
       transaction.category,
-      DateFormat('YYYY-MM-DD').format(transaction.date)
+      DateFormat('yyyy-MM-dd').format(transaction.date)
     ]);
 
     return res;
@@ -61,5 +70,28 @@ class DBProvider {
       var resMap = res[0];
       return resMap.isNotEmpty ? resMap : Null;
     }
+  }
+
+  Future<dynamic> getMonthSummary() async {
+    final db = await database;
+    var now = DateTime.now();
+    var startOfMonth =
+        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+    var endOfMonth =
+        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
+    var res = await db.rawQuery(
+        "SELECT c.name, tt.amount FROM categories c LEFT JOIN (SELECT t.category, SUM(t.amount) AS amount FROM transactions t WHERE DATE(t.date) <= ? AND DATE(t.date) >= ?)tt ON tt.category=c.name",
+        [endOfMonth, startOfMonth]);
+    return res;
+  }
+
+  Future<dynamic> getSummaryByCategory(String category) async {
+    final db = await database;
+    var res = await db
+        .rawQuery("SELECT * FROM transactions WHERE category=?", [category]);
+    res.forEach((element) {
+      print('TX => $element');
+    });
+    return res;
   }
 }
