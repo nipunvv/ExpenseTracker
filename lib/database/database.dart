@@ -80,7 +80,7 @@ class DBProvider {
     var endOfMonth =
         DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
     var res = await db.rawQuery(
-        "SELECT c.name, tt.amount FROM categories c LEFT JOIN (SELECT t.category, SUM(t.amount) AS amount FROM transactions t WHERE DATE(t.date) <= ? AND DATE(t.date) >= ?)tt ON tt.category=c.name",
+        "SELECT c.name, t.amount FROM categories c LEFT JOIN (SELECT category, SUM(amount) AS amount FROM transactions WHERE DATE(date) <= ? AND DATE(date) >= ? GROUP BY category)t ON t.category=c.name",
         [endOfMonth, startOfMonth]);
     return res;
   }

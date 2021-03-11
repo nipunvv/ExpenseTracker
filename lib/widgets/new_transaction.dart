@@ -140,29 +140,30 @@ class _NewTransactionState extends State<NewTransaction> {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(
-                              margin: EdgeInsets.symmetric(horizontal: 0),
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      width: 100.0,
-                                      child: CircleAvatar(
-                                        backgroundColor: item['color'],
-                                        child: Container(
-                                          margin: EdgeInsets.all(5.0),
-                                          child: Icon(
-                                            item['icon'],
-                                            color: Colors.white,
-                                          ),
+                            margin: EdgeInsets.symmetric(horizontal: 0),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: 100.0,
+                                    child: CircleAvatar(
+                                      backgroundColor: item['color'],
+                                      child: Container(
+                                        margin: EdgeInsets.all(5.0),
+                                        child: Icon(
+                                          item['icon'],
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  Text(
-                                    item['title'],
-                                  )
-                                ],
-                              ));
+                                ),
+                                Text(
+                                  item['title'],
+                                )
+                              ],
+                            ),
+                          );
                         },
                       );
                     }).toList(),

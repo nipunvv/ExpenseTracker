@@ -145,10 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           switch (transactionData.connectionState) {
                             case ConnectionState.none:
                             case ConnectionState.waiting:
-                              return Text('0.0');
+                              return Text('₹ 0.0');
                             case ConnectionState.active:
                             case ConnectionState.done:
-                              return Text(
+                              return Text('₹ ' +
                                   (transactionData.data[index]['amount'] ?? 0.0)
                                       .toString());
                           }
@@ -159,13 +159,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onTap: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CategorySummary(
-                                  title: _txTypes[index]['title'],
-                                  icon: _txTypes[index]['icon'],
-                                  color: _txTypes[index]['color'],
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CategorySummary(
+                          title: _txTypes[index]['title'],
+                          icon: _txTypes[index]['icon'],
+                          color: _txTypes[index]['color'],
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
