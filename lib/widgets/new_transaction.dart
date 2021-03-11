@@ -5,10 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
-  // final Function addNewTransaction;
-
-  // NewTransaction(this.addNewTransaction);
-
   @override
   _NewTransactionState createState() => _NewTransactionState();
 }
@@ -18,9 +14,10 @@ class _NewTransactionState extends State<NewTransaction> {
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   final CarouselController _controller = CarouselController();
+  int categoryIndex = 0;
 
   List<Map<String, Object>> _carousalItems = [
-    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.purple},
+    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.blueGrey},
     {'icon': Icons.shopping_cart, 'title': 'Groceries', 'color': Colors.cyan},
     {'icon': Icons.train, 'title': 'Travel', 'color': Colors.blue},
     {'icon': Icons.local_mall, 'title': 'Beauty', 'color': Colors.red},
@@ -36,16 +33,16 @@ class _NewTransactionState extends State<NewTransaction> {
       return;
     }
 
+    String selectedCategory = _carousalItems[categoryIndex]['title'];
+
     Transaction transaction = Transaction(
         id: null,
         title: enteredTitle,
         amount: enteredAmount,
-        category: null,
+        category: selectedCategory,
         date: _selectedDate);
 
     DBProvider.db.newTransaction(transaction);
-
-    // widget.addNewTransaction(enteredTitle, enteredAmount, _selectedDate);
 
     Navigator.of(context).pop();
   }
@@ -66,6 +63,22 @@ class _NewTransactionState extends State<NewTransaction> {
     });
   }
 
+  void changeCategory(direction) {
+    if (direction == 'left') {
+      setState(() {
+        categoryIndex =
+            categoryIndex == 0 ? _carousalItems.length - 1 : categoryIndex - 1;
+      });
+      _controller.previousPage();
+    } else {
+      setState(() {
+        categoryIndex =
+            categoryIndex == _carousalItems.length - 1 ? 0 : categoryIndex + 1;
+      });
+      _controller.nextPage();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -73,13 +86,14 @@ class _NewTransactionState extends State<NewTransaction> {
         elevation: 0,
         child: Container(
           margin: EdgeInsets.all(0),
-          padding: EdgeInsets.only(left: 10, right: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                height: 70,
+                height: 50,
+                padding: EdgeInsets.only(left: 10, right: 10),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       _selectedDate == null
@@ -104,6 +118,12 @@ class _NewTransactionState extends State<NewTransaction> {
                   ],
                 ),
               ),
+              Divider(
+                color: Colors.grey,
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Stack(
                 children: [
                   CarouselSlider(
@@ -120,29 +140,30 @@ class _NewTransactionState extends State<NewTransaction> {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(
-                              // width: 60.0,
-                              margin: EdgeInsets.symmetric(horizontal: 0),
-                              // decoration: BoxDecoration(color: Colors.amber),
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      width: 100.0,
-                                      child: CircleAvatar(
-                                        backgroundColor: item['color'],
-                                        child: Container(
-                                          margin: EdgeInsets.all(5.0),
-                                          child: Icon(
-                                            item['icon'],
-                                            color: Colors.white,
-                                          ),
+                            margin: EdgeInsets.symmetric(horizontal: 0),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: 100.0,
+                                    child: CircleAvatar(
+                                      backgroundColor: item['color'],
+                                      child: Container(
+                                        margin: EdgeInsets.all(5.0),
+                                        child: Icon(
+                                          item['icon'],
+                                          color: Colors.white,
                                         ),
                                       ),
                                     ),
                                   ),
-                                  Text(item['title'])
-                                ],
-                              ));
+                                ),
+                                Text(
+                                  item['title'],
+                                )
+                              ],
+                            ),
+                          );
                         },
                       );
                     }).toList(),
@@ -150,44 +171,52 @@ class _NewTransactionState extends State<NewTransaction> {
                   Positioned(
                     left: 0,
                     top: 10,
-                    child: FlatButton(
-                      onPressed: () => _controller.previousPage(),
+                    child: TextButton(
+                      onPressed: () => changeCategory('left'),
                       child: Icon(Icons.chevron_left),
                     ),
                   ),
                   Positioned(
                     right: 0,
                     top: 10,
-                    child: FlatButton(
-                      onPressed: () => _controller.nextPage(),
+                    child: TextButton(
+                      onPressed: () => changeCategory('right'),
                       child: Icon(Icons.chevron_right),
                     ),
                   ),
                 ],
               ),
-              TextField(
-                decoration: InputDecoration(labelText: 'title'),
-                controller: _titleController,
-                textInputAction: TextInputAction.go,
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: 'amount'),
-                controller: _amountController,
-                keyboardType: TextInputType.number,
-                onSubmitted: (_) => submitData(),
-                textInputAction: TextInputAction.go,
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Column(
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: 'title'),
+                      controller: _titleController,
+                      textInputAction: TextInputAction.go,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'amount'),
+                      controller: _amountController,
+                      keyboardType: TextInputType.number,
+                      onSubmitted: (_) => submitData(),
+                      textInputAction: TextInputAction.go,
+                    ),
+                  ],
+                ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.only(left: 10, right: 10),
                 child: RaisedButton(
                   child: Text(
-                    'Add Transaction',
+                    'Save',
                   ),
                   color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   onPressed: submitData,
                 ),
-              )
+              ),
             ],
           ),
         ),
