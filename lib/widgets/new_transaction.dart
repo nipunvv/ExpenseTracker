@@ -86,13 +86,14 @@ class _NewTransactionState extends State<NewTransaction> {
         elevation: 0,
         child: Container(
           margin: EdgeInsets.all(0),
-          padding: EdgeInsets.only(left: 10, right: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                height: 70,
+                height: 50,
+                padding: EdgeInsets.only(left: 10, right: 10),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       _selectedDate == null
@@ -117,6 +118,12 @@ class _NewTransactionState extends State<NewTransaction> {
                   ],
                 ),
               ),
+              Divider(
+                color: Colors.grey,
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Stack(
                 children: [
                   CarouselSlider(
@@ -133,9 +140,7 @@ class _NewTransactionState extends State<NewTransaction> {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(
-                              // width: 60.0,
                               margin: EdgeInsets.symmetric(horizontal: 0),
-                              // decoration: BoxDecoration(color: Colors.amber),
                               child: Column(
                                 children: [
                                   Expanded(
@@ -153,7 +158,9 @@ class _NewTransactionState extends State<NewTransaction> {
                                       ),
                                     ),
                                   ),
-                                  Text(item['title'])
+                                  Text(
+                                    item['title'],
+                                  )
                                 ],
                               ));
                         },
@@ -178,29 +185,37 @@ class _NewTransactionState extends State<NewTransaction> {
                   ),
                 ],
               ),
-              TextField(
-                decoration: InputDecoration(labelText: 'title'),
-                controller: _titleController,
-                textInputAction: TextInputAction.go,
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: 'amount'),
-                controller: _amountController,
-                keyboardType: TextInputType.number,
-                onSubmitted: (_) => submitData(),
-                textInputAction: TextInputAction.go,
+              Container(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Column(
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(labelText: 'title'),
+                      controller: _titleController,
+                      textInputAction: TextInputAction.go,
+                    ),
+                    TextField(
+                      decoration: InputDecoration(labelText: 'amount'),
+                      controller: _amountController,
+                      keyboardType: TextInputType.number,
+                      onSubmitted: (_) => submitData(),
+                      textInputAction: TextInputAction.go,
+                    ),
+                  ],
+                ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.only(left: 10, right: 10),
                 child: RaisedButton(
                   child: Text(
-                    'Add Transaction',
+                    'Save',
                   ),
                   color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
                   onPressed: submitData,
                 ),
-              )
+              ),
             ],
           ),
         ),
