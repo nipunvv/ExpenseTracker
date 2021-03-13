@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:expense_tracker/database/database.dart';
 import 'package:expense_tracker/models/transaction.dart';
+import 'package:expense_tracker/redux/store.dart';
+import 'package:expense_tracker/redux/transaction/tx_action.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -42,7 +44,7 @@ class _NewTransactionState extends State<NewTransaction> {
         category: selectedCategory,
         date: _selectedDate);
 
-    DBProvider.db.newTransaction(transaction);
+    Redux.store.dispatch(createTransaction(transaction));
 
     Navigator.of(context).pop();
   }

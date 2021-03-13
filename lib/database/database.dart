@@ -1,4 +1,6 @@
 import 'package:expense_tracker/models/transaction.dart' as MyTransaction;
+import 'package:expense_tracker/models/transaction_summary.dart';
+import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -72,26 +74,31 @@ class DBProvider {
     }
   }
 
-  Future<dynamic> getMonthSummary() async {
+  Future<List<TransactionSummary>> getMonthSummary() async {
     final db = await database;
     var now = DateTime.now();
     var startOfMonth =
         DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
     var endOfMonth =
         DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
-    var res = await db.rawQuery(
+    final List<Map<String, dynamic>> res = await db.rawQuery(
         "SELECT c.name, t.amount FROM categories c LEFT JOIN (SELECT category, SUM(amount) AS amount FROM transactions WHERE DATE(date) <= ? AND DATE(date) >= ? GROUP BY category)t ON t.category=c.name",
         [endOfMonth, startOfMonth]);
-    return res;
+    return List.generate(
+      res.length,
+      (i) {
+        return TransactionSummary(
+          category: res[i]['category'],
+          amount: res[i]['amount'],
+        );
+      },
+    );
   }
 
   Future<dynamic> getSummaryByCategory(String category) async {
     final db = await database;
     var res = await db
         .rawQuery("SELECT * FROM transactions WHERE category=?", [category]);
-    res.forEach((element) {
-      print('TX => $element');
-    });
     return res;
   }
 }

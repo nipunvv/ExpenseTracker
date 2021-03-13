@@ -1,5 +1,7 @@
 import 'package:expense_tracker/database/database.dart';
+import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
+import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
 import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
@@ -14,30 +16,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'ExpenseTracker',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          fontFamily: 'Quicksand',
-          appBarTheme: AppBarTheme(
-            textTheme: ThemeData.light().textTheme.copyWith(
-                  headline6: TextStyle(
-                    fontFamily: 'OpenSans',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  button: TextStyle(
-                    color: Colors.white,
-                  ),
+      title: 'ExpenseTracker',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'Quicksand',
+        appBarTheme: AppBarTheme(
+          textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
-          ),
+                button: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
         ),
-        home: StoreProvider<AppState>(
-          store: Redux.store,
-          child: MyHomePage(
-            title: 'ExpenseTracker',
-          ),
-        ));
+      ),
+      home: StoreProvider<AppState>(
+        store: Redux.store,
+        child: MyHomePage(
+          title: 'ExpenseTracker',
+        ),
+      ),
+    );
   }
 }
 
@@ -52,7 +55,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Map<String, String> transaction = {};
-  Future _transactionSummary;
 
   List<Map<String, Object>> _txTypes = [
     {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.blueGrey},
@@ -86,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _transactionSummary = DBProvider.db.getMonthSummary();
+    Redux.store.dispatch(fetchTxSummaryAction);
   }
 
   getTransactions() async {
@@ -139,20 +141,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         _txTypes[index]['title'],
                         style: Theme.of(context).textTheme.headline6,
                       ),
-                      subtitle: FutureBuilder(
-                        future: _transactionSummary,
-                        builder: (_, transactionData) {
-                          switch (transactionData.connectionState) {
-                            case ConnectionState.none:
-                            case ConnectionState.waiting:
-                              return Text('₹ 0.0');
-                            case ConnectionState.active:
-                            case ConnectionState.done:
-                              return Text('₹ ' +
-                                  (transactionData.data[index]['amount'] ?? 0.0)
-                                      .toString());
+                      subtitle:
+                          StoreConnector<AppState, List<TransactionSummary>>(
+                        distinct: true,
+                        converter: (store) =>
+                            store.state.txSummaryState.txSummary,
+                        builder: (context, txSummary) {
+                          if (txSummary.length > 0) {
+                            return Text(
+                              '₹ ' +
+                                  (txSummary[index].amount ?? 0.0).toString(),
+                            );
+                          } else {
+                            return Text('₹ 0.0');
                           }
-                          return Text('');
                         },
                       ),
                     ),
@@ -161,10 +163,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CategorySummary(
-                          title: _txTypes[index]['title'],
-                          icon: _txTypes[index]['icon'],
-                          color: _txTypes[index]['color'],
+                        builder: (context) => StoreProvider<AppState>(
+                          store: Redux.store,
+                          child: CategorySummary(
+                            title: _txTypes[index]['title'],
+                            icon: _txTypes[index]['icon'],
+                            color: _txTypes[index]['color'],
+                          ),
                         ),
                       ),
                     );
