@@ -1,9 +1,9 @@
-import 'package:expense_tracker/redux/actions/tx_actions.dart';
-import 'package:expense_tracker/redux/tx_state.dart';
+import 'package:expense_tracker/redux/transaction/tx_action.dart';
+import 'package:expense_tracker/redux/transaction/tx_state.dart';
 
 transactionReducer(
     TransactionState prevState, SetTransactionStateAction action) {
-  final payload = action.postsState;
+  final payload = action.txState;
   return prevState.copyWith(
     isError: payload.isError,
     isLoading: payload.isLoading,
