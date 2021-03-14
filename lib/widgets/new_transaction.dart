@@ -137,6 +137,11 @@ class _NewTransactionState extends State<NewTransaction> {
                       enlargeStrategy: CenterPageEnlargeStrategy.height,
                       disableCenter: true,
                       aspectRatio: 2.0,
+                      onPageChanged: (index, reason) {
+                        setState(() {
+                          categoryIndex = index;
+                        });
+                      },
                     ),
                     items: _carousalItems.map((item) {
                       return Builder(
