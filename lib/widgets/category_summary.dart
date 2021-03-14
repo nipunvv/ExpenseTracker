@@ -18,7 +18,7 @@ class _CategorySummaryState extends State<CategorySummary> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(fetchTransactionsAction);
+    Redux.store.dispatch(fetchTransactionsAction(Redux.store, widget.title));
   }
 
   @override
@@ -50,12 +50,22 @@ class _CategorySummaryState extends State<CategorySummary> {
                       ),
                     ),
                   ),
-                  title: Text(
-                    DateFormat('yyyy-MM-dd').format(transactions[index].date),
-                    style: Theme.of(context).textTheme.headline6,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        transactions[index].title,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Text(
+                        DateFormat('yyyy-MM-dd')
+                            .format(transactions[index].date),
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ],
                   ),
                   subtitle: Text(
-                    transactions[index].amount.toString(),
+                    '₹ ' + transactions[index].amount.toString(),
                   ),
                 ),
               ),

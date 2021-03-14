@@ -13,7 +13,8 @@ class SetTransactionStateAction {
   SetTransactionStateAction(this.txState);
 }
 
-Future<void> fetchTransactionsAction(Store<AppState> store) async {
+Future<void> fetchTransactionsAction(
+    Store<AppState> store, String category) async {
   store.dispatch(
     SetTransactionStateAction(
       TransactionState(isLoading: true),
@@ -21,7 +22,9 @@ Future<void> fetchTransactionsAction(Store<AppState> store) async {
   );
 
   try {
-    final transactions = await DBProvider.db.getTransactions();
+    final transactions = category != null
+        ? await DBProvider.db.getSummaryByCategory(category)
+        : await DBProvider.db.getTransactions();
     store.dispatch(
       SetTransactionStateAction(
         TransactionState(
