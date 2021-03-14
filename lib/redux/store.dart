@@ -13,8 +13,7 @@ AppState appReducer(AppState state, dynamic action) {
     final nextTxSummaryState = txSummaryReducer(state.txSummaryState, action);
 
     return state.copyWith(txSummaryState: nextTxSummaryState);
-  }
-  if (action is SetTransactionStateAction) {
+  } else if (action is SetTransactionStateAction) {
     final nextTxState = transactionReducer(state.txState, action);
 
     return state.copyWith(txState: nextTxState);
