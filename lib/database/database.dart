@@ -42,7 +42,7 @@ class DBProvider {
           VALUES ('Food'),('Groceries'),('Travel'),('Beauty'),('Entertainment'),('Other');
         ''');
       },
-      version: 4,
+      version: 1,
     );
   }
 
@@ -63,15 +63,21 @@ class DBProvider {
     return res;
   }
 
-  Future<dynamic> getTransactions() async {
+  Future<List<MyTransaction.Transaction>> getTransactions() async {
     final db = await database;
-    var res = await db.query("transactions");
-    if (res.length == 0) {
-      return null;
-    } else {
-      var resMap = res[0];
-      return resMap.isNotEmpty ? resMap : Null;
-    }
+    final List<Map<String, dynamic>> res = await db.query("transactions");
+    return List.generate(
+      res.length,
+      (i) {
+        return MyTransaction.Transaction(
+          id: res[i]['id'].toString(),
+          title: res[i]['title'],
+          amount: res[i]['amount'],
+          category: res[i]['category'],
+          date: DateTime.parse(res[i]['date']),
+        );
+      },
+    );
   }
 
   Future<List<TransactionSummary>> getMonthSummary() async {
