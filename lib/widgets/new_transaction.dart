@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:expense_tracker/database/database.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/transaction/tx_action.dart';
@@ -7,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
+  final Transaction transaction;
+
+  NewTransaction([this.transaction]);
+
   @override
   _NewTransactionState createState() => _NewTransactionState();
 }
@@ -27,6 +30,22 @@ class _NewTransactionState extends State<NewTransaction> {
     {'icon': Icons.whatshot, 'title': 'Other', 'color': Colors.amber},
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    var existingTx = widget.transaction;
+    if (existingTx != null) {
+      _titleController.text = existingTx.title;
+      _amountController.text = existingTx.amount.toString();
+      _selectedDate = existingTx.date;
+      var index = _carousalItems
+          .indexWhere((element) => element['title'] == existingTx.category);
+      setState(() {
+        categoryIndex = index;
+      });
+    }
+  }
+
   void submitData() {
     String enteredTitle = _titleController.text;
     double enteredAmount = double.parse(_amountController.text);
@@ -38,7 +57,9 @@ class _NewTransactionState extends State<NewTransaction> {
     String selectedCategory = _carousalItems[categoryIndex]['title'];
 
     Transaction transaction = Transaction(
-        id: null,
+        id: widget.transaction != null
+            ? widget.transaction.id.toString()
+            : null,
         title: enteredTitle,
         amount: enteredAmount,
         category: selectedCategory,
@@ -46,6 +67,35 @@ class _NewTransactionState extends State<NewTransaction> {
 
     Redux.store.dispatch(createTransaction(transaction));
 
+    Navigator.of(context).pop();
+  }
+
+  void _showDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext buildContext) {
+        return AlertDialog(
+          title: Text('Delete Transaction'),
+          content: Text(
+              'Do you want to delete transaction ${widget.transaction.title}'),
+          actions: [
+            ElevatedButton(
+              onPressed: deleteData,
+              child: Text('Delete'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void deleteData() {
+    Navigator.of(context).pop();
+    Redux.store.dispatch(deleteTransaction(widget.transaction));
     Navigator.of(context).pop();
   }
 
@@ -137,6 +187,7 @@ class _NewTransactionState extends State<NewTransaction> {
                       enlargeStrategy: CenterPageEnlargeStrategy.height,
                       disableCenter: true,
                       aspectRatio: 2.0,
+                      initialPage: categoryIndex,
                       onPageChanged: (index, reason) {
                         setState(() {
                           categoryIndex = index;
@@ -215,13 +266,26 @@ class _NewTransactionState extends State<NewTransaction> {
               Container(
                 margin: EdgeInsets.only(top: 20),
                 padding: EdgeInsets.only(left: 10, right: 10),
-                child: RaisedButton(
-                  child: Text(
-                    'Save',
-                  ),
-                  color: Theme.of(context).primaryColor,
-                  textColor: Colors.white,
-                  onPressed: submitData,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    if (widget.transaction != null)
+                      ElevatedButton(
+                        child: Text(
+                          'Delete',
+                        ),
+                        onPressed: _showDeleteDialog,
+                      ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton(
+                      child: Text(
+                        widget.transaction != null ? 'Update' : 'Save',
+                      ),
+                      onPressed: submitData,
+                    ),
+                  ],
                 ),
               ),
             ],

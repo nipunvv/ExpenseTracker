@@ -43,6 +43,19 @@ Future<void> fetchTransactionsAction(
 }
 
 Future<void> createTransaction(Transaction transaction) async {
-  await DBProvider.db.newTransaction(transaction);
+  if (transaction.id == null) {
+    await DBProvider.db.newTransaction(transaction);
+  } else {
+    await DBProvider.db.updateTransaction(transaction);
+    Redux.store
+        .dispatch(fetchTransactionsAction(Redux.store, transaction.category));
+  }
   Redux.store.dispatch(fetchTxSummaryAction);
+}
+
+Future<void> deleteTransaction(Transaction transaction) async {
+  await DBProvider.db.deleteTransaction(int.parse(transaction.id));
+  Redux.store
+      .dispatch(fetchTransactionsAction(Redux.store, transaction.category));
+  Redux.store.dispatch(fetchTxSummaryAction(Redux.store));
 }

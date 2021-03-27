@@ -63,6 +63,26 @@ class DBProvider {
     return res;
   }
 
+  updateTransaction(MyTransaction.Transaction transaction) async {
+    final db = await database;
+
+    await db.rawUpdate('''
+    UPDATE transactions SET title=?, amount=?, category=?, date=? WHERE id=?
+    ''', [
+      transaction.title,
+      transaction.amount,
+      transaction.category,
+      DateFormat('yyyy-MM-dd').format(transaction.date),
+      transaction.id,
+    ]);
+  }
+
+  deleteTransaction(int transactionId) async {
+    final db = await database;
+    await db
+        .delete("transactions", where: 'id = ?', whereArgs: [transactionId]);
+  }
+
   Future<List<MyTransaction.Transaction>> getTransactions() async {
     final db = await database;
     final List<Map<String, dynamic>> res = await db.query("transactions");
