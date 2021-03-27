@@ -63,21 +63,30 @@ class DBProvider {
     return res;
   }
 
+  updateTransaction(MyTransaction.Transaction transaction) async {
+    final db = await database;
+
+    await db.rawUpdate('''
+    UPDATE transactions SET title=?, amount=?, category=?, date=? WHERE id=?
+    ''', [
+      transaction.title,
+      transaction.amount,
+      transaction.category,
+      DateFormat('yyyy-MM-dd').format(transaction.date),
+      transaction.id,
+    ]);
+  }
+
+  deleteTransaction(int transactionId) async {
+    final db = await database;
+    await db
+        .delete("transactions", where: 'id = ?', whereArgs: [transactionId]);
+  }
+
   Future<List<MyTransaction.Transaction>> getTransactions() async {
     final db = await database;
     final List<Map<String, dynamic>> res = await db.query("transactions");
-    return List.generate(
-      res.length,
-      (i) {
-        return MyTransaction.Transaction(
-          id: res[i]['id'].toString(),
-          title: res[i]['title'],
-          amount: res[i]['amount'],
-          category: res[i]['category'],
-          date: DateTime.parse(res[i]['date']),
-        );
-      },
-    );
+    return generateTransactionList(res);
   }
 
   Future<List<TransactionSummary>> getMonthSummary() async {
@@ -101,10 +110,27 @@ class DBProvider {
     );
   }
 
-  Future<dynamic> getSummaryByCategory(String category) async {
+  Future<List<MyTransaction.Transaction>> getSummaryByCategory(
+      String category) async {
     final db = await database;
-    var res = await db
+    final List<Map<String, dynamic>> res = await db
         .rawQuery("SELECT * FROM transactions WHERE category=?", [category]);
-    return res;
+    return generateTransactionList(res);
+  }
+
+  List<MyTransaction.Transaction> generateTransactionList(
+      List<Map<String, dynamic>> records) {
+    return List.generate(
+      records.length,
+      (i) {
+        return MyTransaction.Transaction(
+          id: records[i]['id'].toString(),
+          title: records[i]['title'],
+          amount: records[i]['amount'],
+          category: records[i]['category'],
+          date: DateTime.parse(records[i]['date']),
+        );
+      },
+    );
   }
 }

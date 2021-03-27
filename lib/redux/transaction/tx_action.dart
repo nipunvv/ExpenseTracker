@@ -13,7 +13,8 @@ class SetTransactionStateAction {
   SetTransactionStateAction(this.txState);
 }
 
-Future<void> fetchTransactionsAction(Store<AppState> store) async {
+Future<void> fetchTransactionsAction(
+    Store<AppState> store, String category) async {
   store.dispatch(
     SetTransactionStateAction(
       TransactionState(isLoading: true),
@@ -21,7 +22,9 @@ Future<void> fetchTransactionsAction(Store<AppState> store) async {
   );
 
   try {
-    final transactions = await DBProvider.db.getTransactions();
+    final transactions = category != null
+        ? await DBProvider.db.getSummaryByCategory(category)
+        : await DBProvider.db.getTransactions();
     store.dispatch(
       SetTransactionStateAction(
         TransactionState(
@@ -40,6 +43,19 @@ Future<void> fetchTransactionsAction(Store<AppState> store) async {
 }
 
 Future<void> createTransaction(Transaction transaction) async {
-  await DBProvider.db.newTransaction(transaction);
+  if (transaction.id == null) {
+    await DBProvider.db.newTransaction(transaction);
+  } else {
+    await DBProvider.db.updateTransaction(transaction);
+    Redux.store
+        .dispatch(fetchTransactionsAction(Redux.store, transaction.category));
+  }
   Redux.store.dispatch(fetchTxSummaryAction);
+}
+
+Future<void> deleteTransaction(Transaction transaction) async {
+  await DBProvider.db.deleteTransaction(int.parse(transaction.id));
+  Redux.store
+      .dispatch(fetchTransactionsAction(Redux.store, transaction.category));
+  Redux.store.dispatch(fetchTxSummaryAction(Redux.store));
 }
