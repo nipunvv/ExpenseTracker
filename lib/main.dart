@@ -6,6 +6,7 @@ import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:intl/intl.dart';
 
 void main() async {
   await Redux.init();
@@ -96,6 +97,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return _transactions;
   }
 
+  String getMonthAndYear() {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('MMMM, yyyy');
+    final String formatted = formatter.format(now);
+    return formatted;
+  }
+
+  String getTotalExpense(List<TransactionSummary> txSummary) {
+    double totalExpense = 0.0;
+    txSummary.forEach((summary) {
+      totalExpense += summary.amount != null ? summary.amount : 0.0;
+    });
+    return totalExpense.toStringAsFixed(2);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,6 +131,44 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Container(
+              height: 100,
+              width: double.infinity,
+              child: Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                margin: EdgeInsets.all(5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      getMonthAndYear(),
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    StoreConnector<AppState, List<TransactionSummary>>(
+                      distinct: true,
+                      converter: (store) =>
+                          store.state.txSummaryState.txSummary,
+                      builder: (context, txSummary) {
+                        return Text(
+                          '₹  ${getTotalExpense(txSummary)}',
+                          style: TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Container(
               height: 600,
               child: ListView.builder(
