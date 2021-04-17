@@ -4,6 +4,8 @@ import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
 import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
+import 'package:expense_tracker/widgets/stats.dart';
+import 'package:expense_tracker/widgets/reports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
@@ -66,6 +68,18 @@ class _MyHomePageState extends State<MyHomePage> {
     {'icon': Icons.whatshot, 'title': 'Other', 'color': Colors.amber},
   ];
 
+  void _onItemTapped(int index) {
+    if (index != 0) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                index == 1 ? Stats() : Reports()),
+        ModalRoute.withName('/'),
+      );
+    }
+  }
+
   void startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
       context: ctx,
@@ -126,6 +140,25 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () => startAddNewTransaction(context),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.pie_chart),
+            label: 'Stats',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description),
+            label: 'Reports',
+          ),
+        ],
+        currentIndex: 0,
+        selectedItemColor: Colors.purple,
+        onTap: _onItemTapped,
       ),
       body: SingleChildScrollView(
         child: Column(
