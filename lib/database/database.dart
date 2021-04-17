@@ -113,8 +113,14 @@ class DBProvider {
   Future<List<MyTransaction.Transaction>> getSummaryByCategory(
       String category) async {
     final db = await database;
-    final List<Map<String, dynamic>> res = await db
-        .rawQuery("SELECT * FROM transactions WHERE category=?", [category]);
+    var now = DateTime.now();
+    var startOfMonth =
+        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
+    var endOfMonth =
+        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
+    final List<Map<String, dynamic>> res = await db.rawQuery(
+        "SELECT * FROM transactions WHERE category=? AND DATE(date) <= ? AND DATE(date) >= ?",
+        [category, endOfMonth, startOfMonth]);
     return generateTransactionList(res);
   }
 
