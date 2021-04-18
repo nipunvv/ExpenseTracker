@@ -4,7 +4,7 @@ import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
 import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
-import 'package:expense_tracker/widgets/stats.dart';
+import 'package:expense_tracker/widgets/stats/stats.dart';
 import 'package:expense_tracker/widgets/reports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
