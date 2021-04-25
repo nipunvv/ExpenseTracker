@@ -73,7 +73,6 @@ class PieChartState extends State {
   }
 
   double getValue(double amount) {
-    print("AMOUNT =============> ${amount.toStringAsFixed(1)}");
     return amount != null ? double.parse(amount.toStringAsFixed(1)) : 1;
   }
 

@@ -161,37 +161,49 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 100,
               width: double.infinity,
               child: Card(
-                elevation: 1,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                margin: EdgeInsets.all(5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      getMonthAndYear(),
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    StoreConnector<AppState, List<TransactionSummary>>(
-                      distinct: true,
-                      converter: (store) =>
-                          store.state.txSummaryState.txSummary,
-                      builder: (context, txSummary) {
-                        return Text(
-                          '₹  ${getTotalExpense(txSummary)}',
-                          style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
+                color: Colors.amber,
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            getMonthAndYear(),
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        );
-                      },
-                    ),
-                  ],
+                          IconButton(
+                            icon: Icon(Icons.event),
+                            onPressed: () {},
+                          )
+                        ],
+                      ),
+                      StoreConnector<AppState, List<TransactionSummary>>(
+                        distinct: true,
+                        converter: (store) =>
+                            store.state.txSummaryState.txSummary,
+                        builder: (context, txSummary) {
+                          if (txSummary.length > 0) {
+                            return Text(
+                              'Total Expense: ₹ ${getTotalExpense(txSummary)}',
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
