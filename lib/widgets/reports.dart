@@ -1,6 +1,8 @@
 import 'package:expense_tracker/main.dart';
+import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/widgets/stats/stats.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 class Reports extends StatefulWidget {
   @override
@@ -13,7 +15,13 @@ class _ReportsState extends State<Reports> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) => index == 0 ? MyApp() : Stats()),
+          builder: (BuildContext context) => index == 0
+              ? MyApp()
+              : StoreProvider<AppState>(
+                  store: Redux.store,
+                  child: Stats(),
+                ),
+        ),
         ModalRoute.withName('/'),
       );
     }

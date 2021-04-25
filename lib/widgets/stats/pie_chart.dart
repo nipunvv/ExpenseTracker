@@ -1,7 +1,7 @@
 import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
-import 'package:expense_tracker/widgets/stats/indicator_container.dart';
+import 'package:expense_tracker/uitls/tx_utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
@@ -23,56 +23,41 @@ class PieChartState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-            child: Container(
-              height: 200,
-              child: StoreConnector<AppState, List<TransactionSummary>>(
-                distinct: true,
-                converter: (store) => store.state.txSummaryState.txSummary,
-                builder: (context, txSummary) {
-                  if (txSummary.length > 0) {
-                    return PieChart(
-                      PieChartData(
-                        pieTouchData:
-                            PieTouchData(touchCallback: (pieTouchResponse) {
-                          setState(() {
-                            final desiredTouch = pieTouchResponse.touchInput
-                                    is! PointerExitEvent &&
-                                pieTouchResponse.touchInput is! PointerUpEvent;
-                            if (desiredTouch &&
-                                pieTouchResponse.touchedSection != null) {
-                              touchedIndex = pieTouchResponse
-                                  .touchedSection.touchedSectionIndex;
-                            } else {
-                              touchedIndex = -1;
-                            }
-                          });
-                        }),
-                        borderData: FlBorderData(
-                          show: false,
-                        ),
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 40,
-                        sections: showingSections(getValidSummary(txSummary)),
-                      ),
-                    );
-                  } else {
-                    return Text('');
-                  }
-                },
+    return AspectRatio(
+      aspectRatio: 1,
+      child: StoreConnector<AppState, List<TransactionSummary>>(
+        distinct: true,
+        converter: (store) => store.state.txSummaryState.txSummary,
+        builder: (context, txSummary) {
+          if (txSummary.length > 0) {
+            return PieChart(
+              PieChartData(
+                pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
+                  setState(() {
+                    final desiredTouch =
+                        pieTouchResponse.touchInput is! PointerExitEvent &&
+                            pieTouchResponse.touchInput is! PointerUpEvent;
+                    if (desiredTouch &&
+                        pieTouchResponse.touchedSection != null) {
+                      touchedIndex =
+                          pieTouchResponse.touchedSection.touchedSectionIndex;
+                    } else {
+                      touchedIndex = -1;
+                    }
+                  });
+                }),
+                borderData: FlBorderData(
+                  show: false,
+                ),
+                sectionsSpace: 0,
+                centerSpaceRadius: 60,
+                sections: showingSections(getValidSummary(txSummary)),
               ),
-            ),
-          ),
-          IndicatorContainer(),
-          SizedBox(
-            width: 5,
-          ),
-        ],
+            );
+          } else {
+            return Text('');
+          }
+        },
       ),
     );
   }
@@ -87,19 +72,8 @@ class PieChartState extends State {
     return summary;
   }
 
-  double getCategoryPerc(List<TransactionSummary> txSummary, index) {
-    double totalAmount = 0.0;
-    for (TransactionSummary summary in txSummary) {
-      totalAmount += summary.amount != null ? summary.amount : 0;
-    }
-    double percentage =
-        (txSummary[index].amount != null ? txSummary[index].amount : 0) *
-            100 /
-            totalAmount;
-    return percentage != 0 ? percentage : 1;
-  }
-
   double getValue(double amount) {
+    print("AMOUNT =============> ${amount.toStringAsFixed(1)}");
     return amount != null ? double.parse(amount.toStringAsFixed(1)) : 1;
   }
 

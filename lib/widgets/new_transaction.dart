@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/transaction/tx_action.dart';
+import 'package:expense_tracker/uitls/tx_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -21,14 +22,7 @@ class _NewTransactionState extends State<NewTransaction> {
   final CarouselController _controller = CarouselController();
   int categoryIndex = 0;
 
-  List<Map<String, Object>> _carousalItems = [
-    {'icon': Icons.restaurant_menu, 'title': 'Food', 'color': Colors.blueGrey},
-    {'icon': Icons.shopping_cart, 'title': 'Groceries', 'color': Colors.cyan},
-    {'icon': Icons.train, 'title': 'Travel', 'color': Colors.blue},
-    {'icon': Icons.local_mall, 'title': 'Beauty', 'color': Colors.red},
-    {'icon': Icons.theaters, 'title': 'Entertainment', 'color': Colors.green},
-    {'icon': Icons.whatshot, 'title': 'Other', 'color': Colors.amber},
-  ];
+  List<Map<String, Object>> _carousalItems = transactionTypes;
 
   @override
   void initState() {
