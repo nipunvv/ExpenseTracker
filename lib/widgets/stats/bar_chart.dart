@@ -41,6 +41,10 @@ class SummaryBarChartState extends State<SummaryBarChart> {
                     swapAnimationDuration: animDuration,
                   );
                 }
+                return Container(
+                  width: 0.0,
+                  height: 0.0,
+                );
               },
             ),
           ),

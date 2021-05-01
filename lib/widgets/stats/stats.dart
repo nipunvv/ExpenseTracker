@@ -108,6 +108,7 @@ class _StatsState extends State<Stats> {
                               'Total Expense: ₹ ${getTotalExpense(txSummary)}',
                             );
                           }
+                          return Text('Total Expense: ₹ 0.0');
                         },
                       ),
                     ],

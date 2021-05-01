@@ -167,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.amber,
                 child: Container(
                   width: double.infinity,
+                  height: 200,
                   padding: EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 10,
@@ -200,6 +201,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               'Total Expense: ₹ ${getTotalExpense(txSummary)}',
                             );
                           }
+                          return Text(
+                            'Total Expense: ₹ 0.0',
+                          );
                         },
                       ),
                     ],
@@ -244,9 +248,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               '₹ ' +
                                   (txSummary[index].amount ?? 0.0).toString(),
                             );
-                          } else {
-                            return Text('₹ 0.0');
                           }
+                          return Text('₹ 0.0');
                         },
                       ),
                     ),
