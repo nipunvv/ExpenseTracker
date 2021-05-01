@@ -65,12 +65,14 @@ class PieChartState extends State<SummaryPieChart> {
   }
 
   bool hasValidData() {
-    widget.txSummary.forEach((summary) {
-      if (summary.amount != 0) {
-        return true;
+    bool isValid = false;
+    for (TransactionSummary summary in widget.txSummary) {
+      if (summary.amount != null) {
+        isValid = true;
+        break;
       }
-    });
-    return false;
+    }
+    return isValid;
   }
 
   List<TransactionSummary> getValidSummary(List<TransactionSummary> txSummary) {

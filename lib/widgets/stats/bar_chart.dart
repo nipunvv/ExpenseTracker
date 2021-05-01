@@ -29,32 +29,32 @@ class SummaryBarChartState extends State<SummaryBarChart> {
     return AspectRatio(
       aspectRatio: 1,
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Expanded(
-          child: hasValidData()
-              ? BarChart(
-                  mainBarData(widget.txSummary),
-                  swapAnimationDuration: animDuration,
-                )
-              : Container(
-                  child: Center(
-                    child: Text(
-                      'You don\'t have any transactions yet',
-                    ),
+        padding: EdgeInsets.all(50.0),
+        child: hasValidData()
+            ? BarChart(
+                mainBarData(widget.txSummary),
+                swapAnimationDuration: animDuration,
+              )
+            : Container(
+                child: Center(
+                  child: Text(
+                    'You don\'t have any transaction for this month',
                   ),
                 ),
-        ),
+              ),
       ),
     );
   }
 
   bool hasValidData() {
-    widget.txSummary.forEach((summary) {
-      if (summary.amount != 0) {
-        return true;
+    bool isValid = false;
+    for (TransactionSummary summary in widget.txSummary) {
+      if (summary.amount != null) {
+        isValid = true;
+        break;
       }
-    });
-    return false;
+    }
+    return isValid;
   }
 
   BarChartGroupData makeGroupData(

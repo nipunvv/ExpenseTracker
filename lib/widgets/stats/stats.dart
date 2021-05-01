@@ -159,29 +159,41 @@ class _StatsState extends State<Stats> {
                   ),
                   IndicatorContainer(),
                   StoreProvider<AppState>(
-                      store: Redux.store,
-                      child: StoreConnector<AppState, List<TransactionSummary>>(
-                          distinct: true,
-                          converter: (store) =>
-                              store.state.txSummaryState.txSummary,
-                          builder: (context, txSummary) {
-                            if (txSummary.length > 0) {
-                              if (isPiechart) {
-                                return SummaryPieChart(txSummary);
-                              } else {
-                                return SummaryBarChart(txSummary);
-                              }
-                            }
-                            return Container(
-                              child: Center(
-                                child: Text(
-                                  'You don\'t have any transactions yet',
-                                ),
-                              ),
-                            );
-                          })
-                      // isPiechart ? SummaryPieChart() : SummaryBarChart(),
-                      ),
+                    store: Redux.store,
+                    child: StoreConnector<AppState, List<TransactionSummary>>(
+                      distinct: true,
+                      converter: (store) =>
+                          store.state.txSummaryState.txSummary,
+                      builder: (context, txSummary) {
+                        if (txSummary.length > 0) {
+                          return AnimatedSwitcher(
+                            duration: const Duration(seconds: 1),
+                            transitionBuilder: (
+                              Widget child,
+                              Animation<double> animation,
+                            ) =>
+                                SlideTransition(
+                              position: Tween<Offset>(
+                                begin: Offset(-3.0, 0.0),
+                                end: const Offset(0.0, 0.0),
+                              ).animate(animation),
+                              child: child,
+                            ),
+                            child: isPiechart
+                                ? SummaryPieChart(txSummary)
+                                : SummaryBarChart(txSummary),
+                          );
+                        }
+                        return Container(
+                          child: Center(
+                            child: Text(
+                              'You don\'t have any transactions yet',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
