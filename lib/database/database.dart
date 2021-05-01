@@ -103,7 +103,7 @@ class DBProvider {
       res.length,
       (i) {
         return TransactionSummary(
-          category: res[i]['category'],
+          category: res[i]['name'],
           amount: res[i]['amount'],
         );
       },

@@ -15,6 +15,8 @@ class SummaryPieChart extends StatefulWidget {
 class PieChartState extends State {
   int touchedIndex;
 
+  List<Map<String, Object>> txTypes = transactionTypes;
+
   @override
   void initState() {
     super.initState();
@@ -54,9 +56,11 @@ class PieChartState extends State {
                 sections: showingSections(getValidSummary(txSummary)),
               ),
             );
-          } else {
-            return Text('');
           }
+          return Container(
+            width: 0.0,
+            height: 0.0,
+          );
         },
       ),
     );
@@ -76,21 +80,12 @@ class PieChartState extends State {
     return amount != null ? double.parse(amount.toStringAsFixed(1)) : 1;
   }
 
-  Color getColor(int index) {
+  Color getColor(TransactionSummary summary) {
     Color areaColor = Colors.blue;
-    if (index == 0) {
-      areaColor = Colors.blueGrey;
-    } else if (index == 1) {
-      areaColor = Colors.cyan;
-    } else if (index == 2) {
-      areaColor = Colors.blue;
-    } else if (index == 3) {
-      areaColor = Colors.red;
-    } else if (index == 4) {
-      areaColor = Colors.green;
-    } else if (index == 5) {
-      areaColor = Colors.amber;
-    }
+    String category = summary.category;
+    txTypes.forEach((element) {
+      areaColor = element['title'] == category ? element['color'] : areaColor;
+    });
     return areaColor;
   }
 
@@ -101,7 +96,7 @@ class PieChartState extends State {
       final double fontSize = isTouched ? 25 : 16;
       final double radius = isTouched ? 60 : 50;
       return PieChartSectionData(
-        color: getColor(i),
+        color: getColor(txSummary[i]),
         value: getValue(txSummary[i].amount),
         title: '${getCategoryPerc(txSummary, i)}%',
         radius: radius,
