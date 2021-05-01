@@ -51,46 +51,53 @@ class _CategorySummaryState extends State<CategorySummary> {
         child: StoreConnector<AppState, List<Transaction>>(
           converter: (store) => store.state.txState.transactions,
           builder: (context, transactions) {
-            return ListView.builder(
-              itemCount: transactions.length,
-              itemBuilder: (context, index) => GestureDetector(
-                child: Card(
-                  elevation: 0,
-                  margin: EdgeInsets.symmetric(horizontal: 3, vertical: 4),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      backgroundColor: widget.color,
-                      child: Padding(
-                        padding: EdgeInsets.all(6),
-                        child: FittedBox(
-                          child: Icon(
-                            widget.icon,
-                            color: Colors.white,
+            if (transactions.length > 0) {
+              return ListView.builder(
+                itemCount: transactions.length,
+                itemBuilder: (context, index) => GestureDetector(
+                  child: Card(
+                    elevation: 0,
+                    margin: EdgeInsets.symmetric(horizontal: 3, vertical: 4),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        radius: 30,
+                        backgroundColor: widget.color,
+                        child: Padding(
+                          padding: EdgeInsets.all(6),
+                          child: FittedBox(
+                            child: Icon(
+                              widget.icon,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          transactions[index].title,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                        Text(
-                          DateFormat('yyyy-MM-dd')
-                              .format(transactions[index].date),
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ],
-                    ),
-                    subtitle: Text(
-                      '₹ ' + transactions[index].amount.toString(),
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            transactions[index].title,
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                          Text(
+                            DateFormat('yyyy-MM-dd')
+                                .format(transactions[index].date),
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      subtitle: Text(
+                        '₹ ' + transactions[index].amount.toString(),
+                      ),
                     ),
                   ),
+                  onTap: () => editTransaction(context, transactions[index]),
                 ),
-                onTap: () => editTransaction(context, transactions[index]),
+              );
+            }
+            return Center(
+              child: Text(
+                "No transaction for ${widget.title} yet",
               ),
             );
           },

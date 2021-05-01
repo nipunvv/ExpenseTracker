@@ -5,14 +5,16 @@ import 'package:expense_tracker/uitls/tx_utils.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 class SummaryPieChart extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => PieChartState();
+
+  final List<TransactionSummary> txSummary;
+  SummaryPieChart(this.txSummary);
 }
 
-class PieChartState extends State {
+class PieChartState extends State<SummaryPieChart> {
   int touchedIndex;
 
   List<Map<String, Object>> txTypes = transactionTypes;
@@ -27,12 +29,8 @@ class PieChartState extends State {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
-      child: StoreConnector<AppState, List<TransactionSummary>>(
-        distinct: true,
-        converter: (store) => store.state.txSummaryState.txSummary,
-        builder: (context, txSummary) {
-          if (txSummary.length > 0) {
-            return PieChart(
+      child: hasValidData()
+          ? PieChart(
               PieChartData(
                 pieTouchData: PieTouchData(touchCallback: (pieTouchResponse) {
                   setState(() {
@@ -53,17 +51,26 @@ class PieChartState extends State {
                 ),
                 sectionsSpace: 0,
                 centerSpaceRadius: 60,
-                sections: showingSections(getValidSummary(txSummary)),
+                sections: showingSections(getValidSummary(widget.txSummary)),
               ),
-            );
-          }
-          return Container(
-            width: 0.0,
-            height: 0.0,
-          );
-        },
-      ),
+            )
+          : Container(
+              child: Center(
+                child: Text(
+                  'You don\'t have any transactions yet',
+                ),
+              ),
+            ),
     );
+  }
+
+  bool hasValidData() {
+    widget.txSummary.forEach((summary) {
+      if (summary.amount != 0) {
+        return true;
+      }
+    });
+    return false;
   }
 
   List<TransactionSummary> getValidSummary(List<TransactionSummary> txSummary) {

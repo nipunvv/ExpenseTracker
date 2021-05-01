@@ -158,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              height: 100,
+              height: MediaQuery.of(context).size.height * 0.15,
               width: double.infinity,
               child: Card(
                 shape: RoundedRectangleBorder(
@@ -167,7 +167,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: Colors.amber,
                 child: Container(
                   width: double.infinity,
-                  height: 200,
                   padding: EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 10,
@@ -212,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-              height: 600,
+              height: MediaQuery.of(context).size.height * 0.6,
               child: ListView.builder(
                 itemCount: _txTypes.length,
                 itemBuilder: (context, index) => GestureDetector(

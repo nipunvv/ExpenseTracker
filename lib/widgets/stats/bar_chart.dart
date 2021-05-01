@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'package:expense_tracker/models/transaction_summary.dart';
-import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/uitls/tx_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 
 class SummaryBarChart extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => SummaryBarChartState();
+
+  final List<TransactionSummary> txSummary;
+
+  SummaryBarChart(this.txSummary);
 }
 
 class SummaryBarChartState extends State<SummaryBarChart> {
@@ -29,28 +31,30 @@ class SummaryBarChartState extends State<SummaryBarChart> {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: StoreConnector<AppState, List<TransactionSummary>>(
-              distinct: true,
-              converter: (store) => store.state.txSummaryState.txSummary,
-              builder: (context, txSummary) {
-                if (txSummary.length > 0) {
-                  return BarChart(
-                    mainBarData(txSummary),
-                    swapAnimationDuration: animDuration,
-                  );
-                }
-                return Container(
-                  width: 0.0,
-                  height: 0.0,
-                );
-              },
-            ),
-          ),
+          child: hasValidData()
+              ? BarChart(
+                  mainBarData(widget.txSummary),
+                  swapAnimationDuration: animDuration,
+                )
+              : Container(
+                  child: Center(
+                    child: Text(
+                      'You don\'t have any transactions yet',
+                    ),
+                  ),
+                ),
         ),
       ),
     );
+  }
+
+  bool hasValidData() {
+    widget.txSummary.forEach((summary) {
+      if (summary.amount != 0) {
+        return true;
+      }
+    });
+    return false;
   }
 
   BarChartGroupData makeGroupData(
