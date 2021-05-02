@@ -33,7 +33,32 @@ class _CategorySummaryState extends State<CategorySummary> {
       builder: (_) {
         return SingleChildScrollView(
           child: GestureDetector(
-            child: NewTransaction(transaction),
+            child: NewTransaction(
+              transaction: transaction,
+              addingCategory: '',
+            ),
+            onTap: () {},
+          ),
+        );
+      },
+    );
+  }
+
+  void startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+      context: ctx,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(10.0),
+        ),
+      ),
+      isScrollControlled: true,
+      builder: (_) {
+        return SingleChildScrollView(
+          child: GestureDetector(
+            child: NewTransaction(
+              addingCategory: widget.title,
+            ),
             onTap: () {},
           ),
         );
@@ -46,6 +71,11 @@ class _CategorySummaryState extends State<CategorySummary> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => startAddNewTransaction(context),
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.green,
       ),
       body: Container(
         child: StoreConnector<AppState, List<Transaction>>(

@@ -8,8 +8,9 @@ import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   final Transaction transaction;
+  final String addingCategory;
 
-  NewTransaction([this.transaction]);
+  NewTransaction({this.transaction, this.addingCategory = ''});
 
   @override
   _NewTransactionState createState() => _NewTransactionState();
@@ -48,16 +49,17 @@ class _NewTransactionState extends State<NewTransaction> {
       return;
     }
 
-    String selectedCategory = _carousalItems[categoryIndex]['title'];
+    String selectedCategory = widget.addingCategory == ''
+        ? _carousalItems[categoryIndex]['title']
+        : widget.addingCategory;
 
     Transaction transaction = Transaction(
-        id: widget.transaction != null
-            ? widget.transaction.id.toString()
-            : null,
-        title: enteredTitle,
-        amount: enteredAmount,
-        category: selectedCategory,
-        date: _selectedDate);
+      id: widget.transaction != null ? widget.transaction.id.toString() : null,
+      title: enteredTitle,
+      amount: enteredAmount,
+      category: selectedCategory,
+      date: _selectedDate,
+    );
 
     Redux.store.dispatch(createTransaction(transaction));
 
@@ -125,6 +127,26 @@ class _NewTransactionState extends State<NewTransaction> {
     }
   }
 
+  Color getBgColor(String categoryName) {
+    Color bgColor = Colors.blueGrey;
+    _carousalItems.forEach((element) {
+      if (element['title'] == categoryName) {
+        bgColor = element['color'];
+      }
+    });
+    return bgColor;
+  }
+
+  IconData getIcon(String categoryName) {
+    IconData icon = Icons.food_bank;
+    _carousalItems.forEach((element) {
+      if (element['title'] == categoryName) {
+        icon = element['icon'];
+      }
+    });
+    return icon;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -170,74 +192,99 @@ class _NewTransactionState extends State<NewTransaction> {
               SizedBox(
                 height: 10,
               ),
-              Stack(
-                children: [
-                  CarouselSlider(
-                    carouselController: _controller,
-                    options: CarouselOptions(
-                      height: 80.0,
-                      viewportFraction: 1.0,
-                      enlargeCenterPage: true,
-                      enlargeStrategy: CenterPageEnlargeStrategy.height,
-                      disableCenter: true,
-                      aspectRatio: 2.0,
-                      initialPage: categoryIndex,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          categoryIndex = index;
-                        });
-                      },
-                    ),
-                    items: _carousalItems.map((item) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            margin: EdgeInsets.symmetric(horizontal: 0),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    width: 100.0,
-                                    child: CircleAvatar(
-                                      backgroundColor: item['color'],
-                                      child: Container(
-                                        margin: EdgeInsets.all(5.0),
-                                        child: Icon(
-                                          item['icon'],
-                                          color: Colors.white,
+              widget.addingCategory == ''
+                  ? Stack(
+                      children: [
+                        CarouselSlider(
+                          carouselController: _controller,
+                          options: CarouselOptions(
+                            height: 80.0,
+                            viewportFraction: 1.0,
+                            enlargeCenterPage: true,
+                            enlargeStrategy: CenterPageEnlargeStrategy.height,
+                            disableCenter: true,
+                            aspectRatio: 2.0,
+                            initialPage: categoryIndex,
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                categoryIndex = index;
+                              });
+                            },
+                          ),
+                          items: _carousalItems.map((item) {
+                            return Builder(
+                              builder: (BuildContext context) {
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 0),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          width: 100.0,
+                                          child: CircleAvatar(
+                                            backgroundColor: item['color'],
+                                            child: Container(
+                                              margin: EdgeInsets.all(5.0),
+                                              child: Icon(
+                                                item['icon'],
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                      Text(
+                                        item['title'],
+                                      ),
+                                    ],
                                   ),
+                                );
+                              },
+                            );
+                          }).toList(),
+                        ),
+                        Positioned(
+                          left: 0,
+                          top: 10,
+                          child: TextButton(
+                            onPressed: () => changeCategory('left'),
+                            child: Icon(Icons.chevron_left),
+                          ),
+                        ),
+                        Positioned(
+                          right: 0,
+                          top: 10,
+                          child: TextButton(
+                            onPressed: () => changeCategory('right'),
+                            child: Icon(Icons.chevron_right),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 100.0,
+                            height: 60.0,
+                            child: CircleAvatar(
+                              backgroundColor:
+                                  getBgColor(widget.addingCategory),
+                              child: Container(
+                                margin: EdgeInsets.all(5.0),
+                                child: Icon(
+                                  getIcon(widget.addingCategory),
+                                  color: Colors.white,
                                 ),
-                                Text(
-                                  item['title'],
-                                )
-                              ],
+                              ),
                             ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  Positioned(
-                    left: 0,
-                    top: 10,
-                    child: TextButton(
-                      onPressed: () => changeCategory('left'),
-                      child: Icon(Icons.chevron_left),
+                          ),
+                        ),
+                        Text(
+                          widget.addingCategory,
+                        ),
+                      ],
                     ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 10,
-                    child: TextButton(
-                      onPressed: () => changeCategory('right'),
-                      child: Icon(Icons.chevron_right),
-                    ),
-                  ),
-                ],
-              ),
               Container(
                 padding: EdgeInsets.only(left: 10, right: 10),
                 child: Column(
@@ -246,6 +293,7 @@ class _NewTransactionState extends State<NewTransaction> {
                       decoration: InputDecoration(labelText: 'title'),
                       controller: _titleController,
                       textInputAction: TextInputAction.go,
+                      textCapitalization: TextCapitalization.sentences,
                     ),
                     TextField(
                       decoration: InputDecoration(labelText: 'amount'),
