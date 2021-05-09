@@ -14,7 +14,12 @@ import 'package:intl/intl.dart';
 
 void main() async {
   await Redux.init();
-  runApp(MyApp());
+  runApp(
+    StoreProvider<AppState>(
+      store: Redux.store,
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -39,11 +44,8 @@ class MyApp extends StatelessWidget {
               ),
         ),
       ),
-      home: StoreProvider<AppState>(
-        store: Redux.store,
-        child: MyHomePage(
-          title: 'ExpenseTracker',
-        ),
+      home: MyHomePage(
+        title: 'ExpenseTracker',
       ),
     );
   }
@@ -68,12 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => index == 1
-              ? StoreProvider<AppState>(
-                  store: Redux.store,
-                  child: Stats(),
-                )
-              : Reports(),
+          builder: (BuildContext context) => index == 1 ? Stats() : Reports(),
         ),
         ModalRoute.withName('/'),
       );
@@ -257,13 +254,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => StoreProvider<AppState>(
-                          store: Redux.store,
-                          child: CategorySummary(
-                            title: _txTypes[index]['title'],
-                            icon: _txTypes[index]['icon'],
-                            color: _txTypes[index]['color'],
-                          ),
+                        builder: (context) => CategorySummary(
+                          title: _txTypes[index]['title'],
+                          icon: _txTypes[index]['icon'],
+                          color: _txTypes[index]['color'],
                         ),
                       ),
                     );

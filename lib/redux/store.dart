@@ -1,6 +1,9 @@
 import 'package:expense_tracker/redux/transaction/tx_action.dart';
 import 'package:expense_tracker/redux/transaction/tx_reducer.dart';
 import 'package:expense_tracker/redux/transaction/tx_state.dart';
+import 'package:expense_tracker/redux/tx-report/tx_report_action.dart';
+import 'package:expense_tracker/redux/tx-report/tx_report_reducer.dart';
+import 'package:expense_tracker/redux/tx-report/tx_report_state.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_reducer.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_state.dart';
@@ -17,6 +20,9 @@ AppState appReducer(AppState state, dynamic action) {
     final nextTxState = transactionReducer(state.txState, action);
 
     return state.copyWith(txState: nextTxState);
+  } else if (action is SetTransactionReportStateAction) {
+    final nextTxReportState = txReportReducer(state.txReportState, action);
+    return state.copyWith(txReportState: nextTxReportState);
   }
 
   return state;
@@ -26,19 +32,23 @@ AppState appReducer(AppState state, dynamic action) {
 class AppState {
   final TransactionSummaryState txSummaryState;
   final TransactionState txState;
+  final TransactionReportState txReportState;
 
   AppState({
     @required this.txSummaryState,
     @required this.txState,
+    @required this.txReportState,
   });
 
   AppState copyWith({
     TransactionSummaryState txSummaryState,
     TransactionState txState,
+    TransactionReportState txReportState,
   }) {
     return AppState(
       txSummaryState: txSummaryState ?? this.txSummaryState,
       txState: txState ?? this.txState,
+      txReportState: txReportState ?? this.txReportState,
     );
   }
 }
@@ -57,6 +67,7 @@ class Redux {
   static Future<void> init() async {
     final txSummaryStateInitial = TransactionSummaryState.initial();
     final txStateInitial = TransactionState.initial();
+    final txReportStateInitial = TransactionReportState.initial();
 
     _store = Store<AppState>(
       appReducer,
@@ -64,6 +75,7 @@ class Redux {
       initialState: AppState(
         txSummaryState: txSummaryStateInitial,
         txState: txStateInitial,
+        txReportState: txReportStateInitial,
       ),
     );
   }

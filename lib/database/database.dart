@@ -139,4 +139,24 @@ class DBProvider {
       },
     );
   }
+
+  Future<List<MyTransaction.Transaction>> getTransactionReport(
+      DateTime fromDate, DateTime toDate, String category) async {
+    final db = await database;
+    String startDate = DateFormat('yyyy-MM-dd')
+        .format(DateTime(fromDate.year, fromDate.month, 1));
+    String endDate = DateFormat('yyyy-MM-dd')
+        .format(DateTime(toDate.year, toDate.month + 1, 0));
+    List<Map<String, dynamic>> res;
+    if (category == 'All') {
+      res = await db.rawQuery(
+          "SELECT * FROM transactions WHERE DATE(date) <= ? AND DATE(date) >= ? ORDER BY date DESC",
+          [endDate, startDate]);
+    } else {
+      res = await db.rawQuery(
+          "SELECT * FROM transactions WHERE category=? AND DATE(date) <= ? AND DATE(date) >= ? ORDER BY date DESC",
+          [category, endDate, startDate]);
+    }
+    return generateTransactionList(res);
+  }
 }
