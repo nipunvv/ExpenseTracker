@@ -1,13 +1,14 @@
-import 'package:expense_tracker/main.dart';
 import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/uitls/date_utils.dart';
+import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/widgets/stats/indicator_container.dart';
 import 'package:expense_tracker/widgets/stats/pie_chart.dart';
 import 'package:expense_tracker/widgets/stats/bar_chart.dart';
-import 'package:expense_tracker/widgets/reports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+
+const CURRENT_PAGE = 1;
 
 class Stats extends StatefulWidget {
   @override
@@ -16,18 +17,6 @@ class Stats extends StatefulWidget {
 
 class _StatsState extends State<Stats> {
   bool isPiechart = false;
-
-  void _onItemTapped(index) {
-    if (index != 1) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) =>
-                index == 0 ? MyApp() : Reports()),
-        ModalRoute.withName('/'),
-      );
-    }
-  }
 
   String getTotalExpense(List<TransactionSummary> txSummary) {
     double totalExpense = 0.0;
@@ -58,9 +47,9 @@ class _StatsState extends State<Stats> {
             label: 'Reports',
           ),
         ],
-        currentIndex: 1,
+        currentIndex: CURRENT_PAGE,
         selectedItemColor: Colors.purple,
-        onTap: _onItemTapped,
+        onTap: (index) => navigateToPage(CURRENT_PAGE, index, context),
       ),
       body: Container(
         color: Colors.white,

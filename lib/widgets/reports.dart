@@ -2,13 +2,15 @@ import 'package:expense_tracker/main.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-report/tx_report_action.dart';
+import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/uitls/tx_utils.dart';
-import 'package:expense_tracker/widgets/stats/stats.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
+
+const CURRENT_PAGE = 2;
 
 class Reports extends StatefulWidget {
   @override
@@ -34,18 +36,6 @@ class _ReportsState extends State<Reports> {
     super.initState();
     _carousalItems
         .insert(0, {'icon': null, 'title': 'All', 'color': Colors.brown});
-  }
-
-  void _onItemTapped(index) {
-    if (index != 2) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => index == 0 ? MyApp() : Stats(),
-        ),
-        ModalRoute.withName('/'),
-      );
-    }
   }
 
   void _changeCategory(index) {
@@ -125,9 +115,9 @@ class _ReportsState extends State<Reports> {
             label: 'Reports',
           ),
         ],
-        currentIndex: 2,
+        currentIndex: CURRENT_PAGE,
         selectedItemColor: Colors.purple,
-        onTap: _onItemTapped,
+        onTap: (index) => navigateToPage(CURRENT_PAGE, index, context),
       ),
       body: Container(
         child: Column(

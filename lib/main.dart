@@ -3,6 +3,7 @@ import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
 import 'package:expense_tracker/uitls/date_utils.dart';
+import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/uitls/tx_utils.dart';
 import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
@@ -10,7 +11,6 @@ import 'package:expense_tracker/widgets/stats/stats.dart';
 import 'package:expense_tracker/widgets/reports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:intl/intl.dart';
 
 void main() async {
   await Redux.init();
@@ -21,6 +21,8 @@ void main() async {
     ),
   );
 }
+
+const CURRENT_PAGE = 0;
 
 class MyApp extends StatelessWidget {
   @override
@@ -64,18 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, String> transaction = {};
 
   List<Map<String, Object>> _txTypes = transactionTypes;
-
-  void _onItemTapped(int index) {
-    if (index != 0) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => index == 1 ? Stats() : Reports(),
-        ),
-        ModalRoute.withName('/'),
-      );
-    }
-  }
 
   void startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
@@ -146,9 +136,9 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Reports',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: CURRENT_PAGE,
         selectedItemColor: Colors.purple,
-        onTap: _onItemTapped,
+        onTap: (index) => navigateToPage(CURRENT_PAGE, index, context),
       ),
       body: SingleChildScrollView(
         child: Column(
