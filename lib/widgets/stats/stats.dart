@@ -124,6 +124,11 @@ class _StatsState extends State<Stats> {
                           color: isPiechart ? Colors.black : Colors.white,
                         ),
                         onPressed: () {
+                          pageController.animateToPage(
+                            0,
+                            curve: Curves.linear,
+                            duration: Duration(milliseconds: 300),
+                          );
                           setState(() {
                             isPiechart = false;
                           });
@@ -138,9 +143,11 @@ class _StatsState extends State<Stats> {
                           color: isPiechart ? Colors.white : Colors.black,
                         ),
                         onPressed: () {
-                          setState(() {
-                            isPiechart = true;
-                          });
+                          pageController.animateToPage(
+                            1,
+                            curve: Curves.linear,
+                            duration: Duration(milliseconds: 300),
+                          );
                         },
                       ),
                     ],
