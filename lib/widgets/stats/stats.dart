@@ -6,6 +6,7 @@ import 'package:expense_tracker/widgets/stats/indicator_container.dart';
 import 'package:expense_tracker/widgets/stats/pie_chart.dart';
 import 'package:expense_tracker/widgets/stats/bar_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 const CURRENT_PAGE = 1;
@@ -17,6 +18,7 @@ class Stats extends StatefulWidget {
 
 class _StatsState extends State<Stats> {
   bool isPiechart = false;
+  final PageController pageController = PageController(initialPage: 0);
 
   String getTotalExpense(List<TransactionSummary> txSummary) {
     double totalExpense = 0.0;
@@ -152,22 +154,21 @@ class _StatsState extends State<Stats> {
                     converter: (store) => store.state.txSummaryState.txSummary,
                     builder: (context, txSummary) {
                       if (txSummary.length > 0) {
-                        return AnimatedSwitcher(
-                          duration: const Duration(seconds: 1),
-                          transitionBuilder: (
-                            Widget child,
-                            Animation<double> animation,
-                          ) =>
-                              SlideTransition(
-                            position: Tween<Offset>(
-                              begin: Offset(-3.0, 0.0),
-                              end: const Offset(0.0, 0.0),
-                            ).animate(animation),
-                            child: child,
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: PageView(
+                            controller: pageController,
+                            scrollDirection: Axis.horizontal,
+                            onPageChanged: (value) {
+                              setState(() {
+                                isPiechart = value == 0 ? false : true;
+                              });
+                            },
+                            children: [
+                              SummaryBarChart(txSummary),
+                              SummaryPieChart(txSummary),
+                            ],
                           ),
-                          child: isPiechart
-                              ? SummaryPieChart(txSummary)
-                              : SummaryBarChart(txSummary),
                         );
                       }
                       return Container(
