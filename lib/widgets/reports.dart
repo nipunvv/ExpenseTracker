@@ -3,6 +3,7 @@ import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-report/tx_report_action.dart';
 import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/uitls/tx_utils.dart';
+import 'package:expense_tracker/widgets/pdf_report.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -93,7 +94,7 @@ class _ReportsState extends State<Reports> {
     return DateFormat('dd-MM-yyyy').format(date);
   }
 
-  void _showExportDialog() {
+  void _showExportDialog(List<Transaction> txReport) {
     showDialog(
       context: context,
       builder: (BuildContext buildContext) {
@@ -102,17 +103,32 @@ class _ReportsState extends State<Reports> {
           children: [
             SimpleDialogOption(
               child: Container(
-                height: 30,
-                child: Text('Export to PDF'),
+                padding: EdgeInsets.symmetric(vertical: 7),
+                child: Text(
+                  'Export to PDF',
+                ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                PdfReport pdfReport = PdfReport();
+                pdfReport.writeOnPdf(txReport);
+                pdfReport.savePdf();
+                Navigator.of(context).pop();
+              },
             ),
             SimpleDialogOption(
               child: Container(
                 height: 30,
-                child: Text('Export to Excel'),
+                padding: EdgeInsets.symmetric(vertical: 7),
+                child: Text(
+                  'Export to Excel',
+                ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                PdfReport pdfReport = PdfReport();
+                pdfReport.writeOnPdf(txReport);
+                pdfReport.getCsv(txReport);
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );
@@ -268,30 +284,35 @@ class _ReportsState extends State<Reports> {
             Row(
               children: [
                 if (!showGetReport)
-                  GestureDetector(
-                    onTap: _showExportDialog,
-                    child: Container(
-                      height: 50,
-                      margin: EdgeInsets.only(top: 20, left: 20, bottom: 30),
-                      padding: EdgeInsets.only(left: 20, right: 20),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFC7F6B6),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(50),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Export Report'),
-                          SizedBox(
-                            width: 10,
+                  StoreConnector<AppState, List<Transaction>>(
+                      converter: (store) => store.state.txReportState.txReport,
+                      builder: (context, txReport) {
+                        return GestureDetector(
+                          onTap: () => _showExportDialog(txReport),
+                          child: Container(
+                            height: 50,
+                            margin:
+                                EdgeInsets.only(top: 20, left: 20, bottom: 30),
+                            padding: EdgeInsets.only(left: 20, right: 20),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFC7F6B6),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Export Report'),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Icon(Icons.file_upload),
+                              ],
+                            ),
                           ),
-                          Icon(Icons.file_upload),
-                        ],
-                      ),
-                    ),
-                  ),
+                        );
+                      }),
                 Spacer(),
                 GestureDetector(
                   onTap: getReport,
