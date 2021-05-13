@@ -1,7 +1,6 @@
 import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
-import 'package:expense_tracker/uitls/date_utils.dart';
 import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/widgets/stats/indicator_container.dart';
 import 'package:expense_tracker/widgets/stats/pie_chart.dart';
@@ -43,7 +42,7 @@ class _StatsState extends State<Stats> {
       context: context,
       firstDate: DateTime(DateTime.now().year - 1, 1),
       lastDate: DateTime(DateTime.now().year, DateTime.now().month),
-      initialDate: DateTime.now(),
+      initialDate: selectedDate,
       locale: Locale("en"),
     ).then((date) {
       if (date != null) {
