@@ -238,32 +238,59 @@ class _ReportsState extends State<Reports> {
                   }).toList(),
                 ),
               ),
-            Align(
-              alignment: Alignment.topRight,
-              child: GestureDetector(
-                onTap: getReport,
-                child: Container(
-                  height: 50,
-                  margin: EdgeInsets.only(top: 20, right: 20, bottom: 30),
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFFFE3E0),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(50),
+            Row(
+              children: [
+                if (!showGetReport)
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      height: 50,
+                      margin: EdgeInsets.only(top: 20, left: 20, bottom: 30),
+                      padding: EdgeInsets.only(left: 20, right: 20),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFC7F6B6),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(50),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Export Report'),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Icon(Icons.file_upload),
+                        ],
+                      ),
                     ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(showGetReport ? 'Get Report' : 'New Report'),
-                      SizedBox(
-                        width: 10,
+                Spacer(),
+                GestureDetector(
+                  onTap: getReport,
+                  child: Container(
+                    height: 50,
+                    margin: EdgeInsets.only(top: 20, right: 20, bottom: 30),
+                    padding: EdgeInsets.only(left: 20, right: 20),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFFE3E0),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(50),
                       ),
-                      Icon(Icons.arrow_forward),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(showGetReport ? 'Get Report' : 'New Report'),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Icon(Icons.arrow_forward),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
             Container(
               child: StoreConnector<AppState, List<Transaction>>(
