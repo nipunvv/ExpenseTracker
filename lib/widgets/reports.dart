@@ -93,6 +93,33 @@ class _ReportsState extends State<Reports> {
     return DateFormat('dd-MM-yyyy').format(date);
   }
 
+  void _showExportDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext buildContext) {
+        return SimpleDialog(
+          title: Text('Export Report'),
+          children: [
+            SimpleDialogOption(
+              child: Container(
+                height: 30,
+                child: Text('Export to PDF'),
+              ),
+              onPressed: () {},
+            ),
+            SimpleDialogOption(
+              child: Container(
+                height: 30,
+                child: Text('Export to Excel'),
+              ),
+              onPressed: () {},
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,7 +269,7 @@ class _ReportsState extends State<Reports> {
               children: [
                 if (!showGetReport)
                   GestureDetector(
-                    onTap: () {},
+                    onTap: _showExportDialog,
                     child: Container(
                       height: 50,
                       margin: EdgeInsets.only(top: 20, left: 20, bottom: 30),
