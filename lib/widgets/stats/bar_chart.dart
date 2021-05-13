@@ -38,7 +38,7 @@ class SummaryBarChartState extends State<SummaryBarChart> {
             : Container(
                 child: Center(
                   child: Text(
-                    'You don\'t have any transaction for this month',
+                    'No Transaction found for this month',
                   ),
                 ),
               ),

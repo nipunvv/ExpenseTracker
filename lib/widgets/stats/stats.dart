@@ -210,9 +210,10 @@ class _StatsState extends State<Stats> {
                         );
                       }
                       return Container(
+                        height: MediaQuery.of(context).size.height * 0.5,
                         child: Center(
                           child: Text(
-                            'You don\'t have any transactions yet',
+                            'No Transaction found for this month',
                           ),
                         ),
                       );

@@ -51,7 +51,7 @@ class PieChartState extends State<SummaryPieChart> {
           : Container(
               child: Center(
                 child: Text(
-                  'You don\'t have any transactions yet',
+                  'No Transaction found for this month',
                 ),
               ),
             ),
