@@ -50,12 +50,12 @@ Future<void> createTransaction(Transaction transaction) async {
   }
   Redux.store
       .dispatch(fetchTransactionsAction(Redux.store, transaction.category));
-  Redux.store.dispatch(fetchTxSummaryAction);
+  Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
 }
 
 Future<void> deleteTransaction(Transaction transaction) async {
   await DBProvider.db.deleteTransaction(int.parse(transaction.id));
   Redux.store
       .dispatch(fetchTransactionsAction(Redux.store, transaction.category));
-  Redux.store.dispatch(fetchTxSummaryAction(Redux.store));
+  Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
 }

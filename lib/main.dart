@@ -7,8 +7,6 @@ import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/uitls/tx_utils.dart';
 import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
-import 'package:expense_tracker/widgets/stats/stats.dart';
-import 'package:expense_tracker/widgets/reports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -90,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(fetchTxSummaryAction);
+    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
   }
 
   getTransactions() async {

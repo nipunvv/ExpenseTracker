@@ -11,7 +11,8 @@ class SetTransactionSummaryStateAction {
   SetTransactionSummaryStateAction(this.txSummaryState);
 }
 
-Future<void> fetchTxSummaryAction(Store<AppState> store) async {
+Future<void> fetchTxSummaryAction(
+    Store<AppState> store, DateTime monthDate) async {
   store.dispatch(
     SetTransactionSummaryStateAction(
       TransactionSummaryState(isLoading: true),
@@ -19,7 +20,7 @@ Future<void> fetchTxSummaryAction(Store<AppState> store) async {
   );
 
   try {
-    final summaryData = await DBProvider.db.getMonthSummary();
+    final summaryData = await DBProvider.db.getMonthSummary(monthDate);
     store.dispatch(
       SetTransactionSummaryStateAction(
         TransactionSummaryState(

@@ -1,4 +1,3 @@
-import 'package:expense_tracker/main.dart';
 import 'package:expense_tracker/models/transaction.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-report/tx_report_action.dart';

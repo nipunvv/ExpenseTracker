@@ -89,13 +89,12 @@ class DBProvider {
     return generateTransactionList(res);
   }
 
-  Future<List<TransactionSummary>> getMonthSummary() async {
+  Future<List<TransactionSummary>> getMonthSummary(DateTime monthDate) async {
     final db = await database;
-    var now = DateTime.now();
-    var startOfMonth =
-        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
-    var endOfMonth =
-        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
+    String startOfMonth = DateFormat('yyyy-MM-dd')
+        .format(DateTime(monthDate.year, monthDate.month, 1));
+    String endOfMonth = DateFormat('yyyy-MM-dd')
+        .format(DateTime(monthDate.year, monthDate.month + 1, 0));
     final List<Map<String, dynamic>> res = await db.rawQuery(
         "SELECT c.name, t.amount FROM categories c LEFT JOIN (SELECT category, SUM(amount) AS amount FROM transactions WHERE DATE(date) <= ? AND DATE(date) >= ? GROUP BY category)t ON t.category=c.name",
         [endOfMonth, startOfMonth]);

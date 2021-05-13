@@ -20,12 +20,6 @@ class PieChartState extends State<SummaryPieChart> {
   List<Map<String, Object>> txTypes = transactionTypes;
 
   @override
-  void initState() {
-    super.initState();
-    Redux.store.dispatch(fetchTxSummaryAction);
-  }
-
-  @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,

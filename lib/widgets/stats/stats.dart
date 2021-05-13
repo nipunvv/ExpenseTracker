@@ -1,5 +1,6 @@
 import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
+import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
 import 'package:expense_tracker/uitls/date_utils.dart';
 import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/widgets/stats/indicator_container.dart';
@@ -8,6 +9,8 @@ import 'package:expense_tracker/widgets/stats/bar_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:intl/intl.dart';
 
 const CURRENT_PAGE = 1;
 
@@ -19,6 +22,13 @@ class Stats extends StatefulWidget {
 class _StatsState extends State<Stats> {
   bool isPiechart = false;
   final PageController pageController = PageController(initialPage: 0);
+  DateTime selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+  }
 
   String getTotalExpense(List<TransactionSummary> txSummary) {
     double totalExpense = 0.0;
@@ -26,6 +36,27 @@ class _StatsState extends State<Stats> {
       totalExpense += summary.amount != null ? summary.amount : 0.0;
     });
     return totalExpense.toStringAsFixed(2);
+  }
+
+  void selectDate() {
+    showMonthPicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 1, 1),
+      lastDate: DateTime(DateTime.now().year, DateTime.now().month),
+      initialDate: DateTime.now(),
+      locale: Locale("en"),
+    ).then((date) {
+      if (date != null) {
+        setState(() {
+          selectedDate = date;
+          Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+        });
+      }
+    });
+  }
+
+  String getFormattedDate() {
+    return DateFormat('MMM yyyy').format(selectedDate);
   }
 
   @override
@@ -76,7 +107,7 @@ class _StatsState extends State<Stats> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          getMonthAndYear(),
+                          getFormattedDate(),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -84,7 +115,7 @@ class _StatsState extends State<Stats> {
                         ),
                         IconButton(
                           icon: Icon(Icons.event),
-                          onPressed: () {},
+                          onPressed: selectDate,
                         )
                       ],
                     ),
