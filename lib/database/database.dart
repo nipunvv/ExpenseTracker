@@ -83,12 +83,6 @@ class DBProvider {
         .delete("transactions", where: 'id = ?', whereArgs: [transactionId]);
   }
 
-  Future<List<MyTransaction.Transaction>> getTransactions() async {
-    final db = await database;
-    final List<Map<String, dynamic>> res = await db.query("transactions");
-    return generateTransactionList(res);
-  }
-
   Future<List<TransactionSummary>> getMonthSummary(DateTime monthDate) async {
     final db = await database;
     String startOfMonth = DateFormat('yyyy-MM-dd')
@@ -110,13 +104,13 @@ class DBProvider {
   }
 
   Future<List<MyTransaction.Transaction>> getSummaryByCategory(
-      String category) async {
+      String category, DateTime monthDate) async {
     final db = await database;
     var now = DateTime.now();
-    var startOfMonth =
-        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month, 1));
-    var endOfMonth =
-        DateFormat('yyyy-MM-dd').format(DateTime(now.year, now.month + 1, 0));
+    String startOfMonth = DateFormat('yyyy-MM-dd')
+        .format(DateTime(monthDate.year, monthDate.month, 1));
+    String endOfMonth = DateFormat('yyyy-MM-dd')
+        .format(DateTime(monthDate.year, monthDate.month + 1, 0));
     final List<Map<String, dynamic>> res = await db.rawQuery(
         "SELECT * FROM transactions WHERE category=? AND DATE(date) <= ? AND DATE(date) >= ?",
         [category, endOfMonth, startOfMonth]);

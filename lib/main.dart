@@ -1,4 +1,3 @@
-import 'package:expense_tracker/database/database.dart';
 import 'package:expense_tracker/models/transaction_summary.dart';
 import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-summary/tx_summary_action.dart';
@@ -10,6 +9,7 @@ import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:intl/intl.dart';
 
 void main() async {
   await Redux.init();
@@ -90,12 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
-  }
-
-  getTransactions() async {
-    final _transactions = DBProvider.db.getTransactions();
-    return _transactions;
+    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
   }
 
   String getTotalExpense(List<TransactionSummary> txSummary) {
@@ -121,6 +116,10 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }
     });
+  }
+
+  String getFormattedDate() {
+    return DateFormat('MMM yyyy').format(selectedDate);
   }
 
   @override
@@ -182,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            getMonthAndYear(),
+                            getFormattedDate(),
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -265,6 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           title: _txTypes[index]['title'],
                           icon: _txTypes[index]['icon'],
                           color: _txTypes[index]['color'],
+                          date: selectedDate,
                         ),
                       ),
                     );

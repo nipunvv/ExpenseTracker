@@ -7,8 +7,8 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:intl/intl.dart';
 
 class CategorySummary extends StatefulWidget {
-  final title, icon, color;
-  CategorySummary({this.title, this.icon, this.color});
+  final title, icon, color, date;
+  CategorySummary({this.title, this.icon, this.color, this.date});
 
   @override
   _CategorySummaryState createState() => _CategorySummaryState();
@@ -18,7 +18,8 @@ class _CategorySummaryState extends State<CategorySummary> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(fetchTransactionsAction(Redux.store, widget.title));
+    Redux.store.dispatch(
+        fetchTransactionsAction(Redux.store, widget.title, widget.date));
   }
 
   void editTransaction(BuildContext ctx, Transaction transaction) {
