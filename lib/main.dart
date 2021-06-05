@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+    Redux.store.dispatch(fetchTxSummaryAction(selectedDate));
   }
 
   String getTotalExpense(List<TransactionSummary> txSummary) {
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (date != null) {
         setState(() {
           selectedDate = date;
-          Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+          Redux.store.dispatch(fetchTxSummaryAction(selectedDate));
         });
       }
     });

@@ -26,13 +26,13 @@ class _StatsState extends State<Stats> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+    Redux.store.dispatch(fetchTxSummaryAction(selectedDate));
   }
 
   @override
   void dispose() {
     super.dispose();
-    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
+    Redux.store.dispatch(fetchTxSummaryAction(DateTime.now()));
   }
 
   String getTotalExpense(List<TransactionSummary> txSummary) {
@@ -54,7 +54,7 @@ class _StatsState extends State<Stats> {
       if (date != null) {
         setState(() {
           selectedDate = date;
-          Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+          Redux.store.dispatch(fetchTxSummaryAction(selectedDate));
         });
       }
     });

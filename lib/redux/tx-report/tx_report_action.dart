@@ -12,7 +12,8 @@ class SetTransactionReportStateAction {
 }
 
 Future<void> fetchTxReportAction(
-    Store<AppState> store, DateTime from, DateTime to, String category) async {
+    DateTime from, DateTime to, String category) async {
+  Store<AppState> store = Redux.store;
   store.dispatch(
     SetTransactionReportStateAction(
       TransactionReportState(isLoading: true),
@@ -39,7 +40,7 @@ Future<void> fetchTxReportAction(
   }
 }
 
-Future<void> resetReport() {
+Future<void> resetReport() async {
   Redux.store.dispatch(
     SetTransactionReportStateAction(
       TransactionReportState(

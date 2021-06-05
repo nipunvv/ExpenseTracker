@@ -86,8 +86,8 @@ class _ReportsState extends State<Reports> {
         category = _carousalItems[i]['title'];
       }
     }
-    Redux.store.dispatch(fetchTxReportAction(
-        Redux.store, selectedFromDate, selectedToDate, category));
+    Redux.store.dispatch(
+        fetchTxReportAction(selectedFromDate, selectedToDate, category));
   }
 
   String formatDate(DateTime date) {

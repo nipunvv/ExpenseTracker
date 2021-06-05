@@ -13,8 +13,8 @@ class SetTransactionStateAction {
   SetTransactionStateAction(this.txState);
 }
 
-Future<void> fetchTransactionsAction(
-    Store<AppState> store, String category, DateTime date) async {
+Future<void> fetchTransactionsAction(String category, DateTime date) async {
+  Store<AppState> store = Redux.store;
   store.dispatch(
     SetTransactionStateAction(
       TransactionState(isLoading: true),
@@ -47,14 +47,14 @@ Future<void> createTransaction(Transaction transaction) async {
   } else {
     await DBProvider.db.updateTransaction(transaction);
   }
-  Redux.store.dispatch(fetchTransactionsAction(
-      Redux.store, transaction.category, DateTime.now()));
-  Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
+  Redux.store
+      .dispatch(fetchTransactionsAction(transaction.category, DateTime.now()));
+  Redux.store.dispatch(fetchTxSummaryAction(DateTime.now()));
 }
 
 Future<void> deleteTransaction(Transaction transaction) async {
   await DBProvider.db.deleteTransaction(int.parse(transaction.id));
-  Redux.store.dispatch(fetchTransactionsAction(
-      Redux.store, transaction.category, DateTime.now()));
-  Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
+  Redux.store
+      .dispatch(fetchTransactionsAction(transaction.category, DateTime.now()));
+  Redux.store.dispatch(fetchTxSummaryAction(DateTime.now()));
 }

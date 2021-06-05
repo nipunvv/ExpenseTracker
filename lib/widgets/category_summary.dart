@@ -18,8 +18,7 @@ class _CategorySummaryState extends State<CategorySummary> {
   @override
   void initState() {
     super.initState();
-    Redux.store.dispatch(
-        fetchTransactionsAction(Redux.store, widget.title, widget.date));
+    Redux.store.dispatch(fetchTransactionsAction(widget.title, widget.date));
   }
 
   void editTransaction(BuildContext ctx, Transaction transaction) {

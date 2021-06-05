@@ -11,8 +11,8 @@ class SetTransactionSummaryStateAction {
   SetTransactionSummaryStateAction(this.txSummaryState);
 }
 
-Future<void> fetchTxSummaryAction(
-    Store<AppState> store, DateTime monthDate) async {
+Future<void> fetchTxSummaryAction(DateTime monthDate) async {
+  Store<AppState> store = Redux.store;
   store.dispatch(
     SetTransactionSummaryStateAction(
       TransactionSummaryState(isLoading: true),
