@@ -29,6 +29,12 @@ class _StatsState extends State<Stats> {
     Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    Redux.store.dispatch(fetchTxSummaryAction(Redux.store, DateTime.now()));
+  }
+
   String getTotalExpense(List<TransactionSummary> txSummary) {
     double totalExpense = 0.0;
     txSummary.forEach((summary) {
