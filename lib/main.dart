@@ -122,20 +122,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return DateFormat('MMM yyyy').format(selectedDate);
   }
 
+  isViewingSameMonthData() {
+    String currentMMYY = DateFormat('MM-YY').format(DateTime.now());
+    String selectedMMYY = DateFormat('MM-YY').format(selectedDate);
+    return currentMMYY == selectedMMYY;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: () => startAddNewTransaction(context),
-          ),
-        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -156,6 +153,13 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedItemColor: Colors.purple,
         onTap: (index) => navigateToPage(CURRENT_PAGE, index, context),
       ),
+      floatingActionButton: isViewingSameMonthData()
+          ? FloatingActionButton(
+              onPressed: () => startAddNewTransaction(context),
+              child: const Icon(Icons.add),
+              backgroundColor: Colors.green,
+            )
+          : Container(),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
