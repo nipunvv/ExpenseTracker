@@ -9,6 +9,7 @@ import 'package:expense_tracker/widgets/category_summary.dart';
 import 'package:expense_tracker/widgets/new_transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 void main() async {
   await Redux.init();
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, String> transaction = {};
 
   List<Map<String, Object>> _txTypes = transactionTypes;
+  DateTime selectedDate = DateTime.now();
 
   void startAddNewTransaction(BuildContext ctx) {
     showModalBottomSheet(
@@ -102,6 +104,23 @@ class _MyHomePageState extends State<MyHomePage> {
       totalExpense += summary.amount != null ? summary.amount : 0.0;
     });
     return totalExpense.toStringAsFixed(2);
+  }
+
+  void selectDate() {
+    showMonthPicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 1, 1),
+      lastDate: DateTime(DateTime.now().year, DateTime.now().month),
+      initialDate: selectedDate,
+      locale: Locale("en"),
+    ).then((date) {
+      if (date != null) {
+        setState(() {
+          selectedDate = date;
+          Redux.store.dispatch(fetchTxSummaryAction(Redux.store, selectedDate));
+        });
+      }
+    });
   }
 
   @override
@@ -171,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           IconButton(
                             icon: Icon(Icons.event),
-                            onPressed: () {},
+                            onPressed: selectDate,
                           )
                         ],
                       ),
