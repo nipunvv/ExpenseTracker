@@ -67,17 +67,25 @@ class _CategorySummaryState extends State<CategorySummary> {
     );
   }
 
+  isViewingSameMonthData() {
+    String currentMMYY = DateFormat('MM-YY').format(DateTime.now());
+    String selectedMMYY = DateFormat('MM-YY').format(widget.date);
+    return currentMMYY == selectedMMYY;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => startAddNewTransaction(context),
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.green,
-      ),
+      floatingActionButton: isViewingSameMonthData()
+          ? FloatingActionButton(
+              onPressed: () => startAddNewTransaction(context),
+              child: const Icon(Icons.add),
+              backgroundColor: Colors.green,
+            )
+          : Container(),
       body: Container(
         child: StoreConnector<AppState, List<Transaction>>(
           converter: (store) => store.state.txState.transactions,
