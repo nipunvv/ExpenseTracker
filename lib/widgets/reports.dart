@@ -3,7 +3,7 @@ import 'package:expense_tracker/redux/store.dart';
 import 'package:expense_tracker/redux/tx-report/tx_report_action.dart';
 import 'package:expense_tracker/uitls/page_utils.dart';
 import 'package:expense_tracker/uitls/tx_utils.dart';
-import 'package:expense_tracker/widgets/pdf_report.dart';
+import 'package:expense_tracker/widgets/pdf_csv_report.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -94,6 +94,11 @@ class _ReportsState extends State<Reports> {
     return DateFormat('dd-MM-yyyy').format(date);
   }
 
+  String getCategory() {
+    Map<String, Object> item = _carousalItems.elementAt(_categoryIndex);
+    return item['title'];
+  }
+
   void _showExportDialog(List<Transaction> txReport) {
     showDialog(
       context: context,
@@ -109,8 +114,8 @@ class _ReportsState extends State<Reports> {
                 ),
               ),
               onPressed: () {
-                PdfReport pdfReport = PdfReport();
-                pdfReport.writeOnPdf(txReport);
+                PdfCsvReport pdfReport = PdfCsvReport();
+                pdfReport.writeOnPdf(txReport, getCategory());
                 pdfReport.savePdf();
                 Navigator.of(context).pop();
               },
@@ -124,9 +129,8 @@ class _ReportsState extends State<Reports> {
                 ),
               ),
               onPressed: () {
-                PdfReport pdfReport = PdfReport();
-                pdfReport.writeOnPdf(txReport);
-                pdfReport.getCsv(txReport);
+                PdfCsvReport csvReport = PdfCsvReport();
+                csvReport.getCsv(txReport, getCategory());
                 Navigator.of(context).pop();
               },
             ),

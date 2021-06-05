@@ -8,13 +8,13 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:csv/csv.dart';
 
-class PdfReport {
+class PdfCsvReport {
   var i = 0;
   var result = 0;
   var formatter = new DateFormat('yyyy-MM-dd');
   final pdf = pw.Document();
 
-  writeOnPdf(List<Transaction> txReport) {
+  writeOnPdf(List<Transaction> txReport, String category) {
     double totalExpense() {
       double sum = 0.0;
       for (var i = 0; i < txReport.length; i++) {
@@ -31,7 +31,7 @@ class PdfReport {
           return <pw.Widget>[
             pw.Header(
               level: 0,
-              child: pw.Text('expense report'),
+              child: pw.Text('Expense Report'),
             ),
             pw.Container(
                 color: PdfColors.cyanAccent,
@@ -41,10 +41,11 @@ class PdfReport {
                       ' slno',
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
-                    pw.Text(
-                      ' Category',
-                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                    ),
+                    if (category == 'All')
+                      pw.Text(
+                        ' Category',
+                        style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                      ),
                     pw.Text(
                       ' Title',
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
@@ -58,12 +59,12 @@ class PdfReport {
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
                     ),
                   ]),
-                  for (var expense in txReport) tableRow(expense, 'All'),
+                  for (var expense in txReport) tableRow(expense, category),
                 ])),
             pw.SizedBox(
               height: 40.0,
             ),
-            pw.Text(' Total Expense is : ' + totalExpense().toString()),
+            pw.Text(' Total Expense is : Rs. ' + totalExpense().toString()),
           ];
         },
       ),
@@ -78,42 +79,29 @@ class PdfReport {
       if (category == 'All') pw.Text(' ' + expense.category),
       pw.Text(' ' + expense.title),
       pw.Text(' ' + expense.amount.toString()),
-      pw.Text(' ' + expense.date.toString())
+      pw.Text(' ' + DateFormat('dd-MM-yyyy').format(expense.date))
     ]);
   }
 
-  Future<int> savePdf() async {
-    var result = 0;
+  void savePdf() async {
     var date = new DateTime.now();
     String now = 'expense ' + date.toString() + '.pdf';
     Directory documentDirectory = await getExternalStorageDirectory();
     String documentPath = documentDirectory.path;
     String path = documentPath + '/' + now;
-    print("DOCUMENT_PATH => $path");
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.storage,
-    ].request();
-    var permissionResult = statuses[Permission.storage];
-    if (permissionResult == PermissionStatus.granted) {
-      result = 1;
-      File file = File(path);
-      await file.writeAsBytes(await pdf.save());
-      OpenFile.open(path);
-    }
-    return result as int;
+    saveAndOpenFile(path, 'pdf', null);
   }
 
-  Future<int> getCsv(List<Transaction> txReport) async {
+  void getCsv(List<Transaction> txReport, String category) async {
     var date = new DateTime.now();
     String now = ' expense ' + date.toString() + '.csv';
     Directory documentDirectory = await getExternalStorageDirectory();
     String documentPath = documentDirectory.path;
     String path = documentPath + '/' + now;
-    print(documentPath);
-    List<List<dynamic>> rows = List<List<dynamic>>();
+    List<List<dynamic>> rows = [];
     List<dynamic> row = [];
     row.add('Slno');
-    row.add('Category');
+    if (category == 'All') row.add('Category');
     row.add('Title');
     row.add('Amount');
     row.add('Date');
@@ -121,20 +109,30 @@ class PdfReport {
     for (int i = 0; i < txReport.length; i++) {
       List<dynamic> row = [];
       row.add(i + 1);
-      row.add(txReport[i].category);
+      if (category == 'All') row.add(txReport[i].category);
       row.add(txReport[i].title);
       row.add(txReport[i].amount);
-      row.add(txReport[i].date.toString());
+      row.add(DateFormat('dd-MM-yyyy').format(txReport[i].date));
       rows.add(row);
     }
+
+    saveAndOpenFile(path, 'csv', rows);
+  }
+
+  void saveAndOpenFile(
+      String path, String type, List<List<dynamic>> rows) async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.storage,
     ].request();
     var permissionResult = statuses[Permission.storage];
     if (permissionResult == PermissionStatus.granted) {
       File file = File(path);
-      String csv = const ListToCsvConverter().convert(rows);
-      await file.writeAsString(csv);
+      if (type == 'csv') {
+        String csv = const ListToCsvConverter().convert(rows);
+        await file.writeAsString(csv);
+      } else {
+        await file.writeAsBytes(await pdf.save());
+      }
       OpenFile.open(path);
     }
   }
