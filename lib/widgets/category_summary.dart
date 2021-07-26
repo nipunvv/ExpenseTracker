@@ -110,19 +110,33 @@ class _CategorySummaryState extends State<CategorySummary> {
                           ),
                         ),
                       ),
-                      title: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            transactions[index].title,
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                          Text(
-                            DateFormat('yyyy-MM-dd')
-                                .format(transactions[index].date),
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ],
+                      title: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: Text(
+                                DateFormat('yyyy-MM-dd')
+                                    .format(transactions[index].date),
+                                style: TextStyle(fontSize: 12),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                transactions[index].title,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: 'Quicksand',
+                                  fontSize: 15,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       subtitle: Text(
                         '₹ ' + transactions[index].amount.toString(),
